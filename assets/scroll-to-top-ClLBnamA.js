@@ -13,7 +13,7 @@
     <div class="premium-header-inner">
       <div class="premium-header-shell">
         <div class="premium-header-left">
-          <a href="./" class="pp-brand-link" aria-label="Famous HD Biryani home">
+          <a href="index.html" class="pp-brand-link" aria-label="Famous HD Biryani home">
             <img
               src="./left-fhd-logo.webp"
               alt="Famous HD Biryani"
@@ -22,9 +22,9 @@
           </a>
 
           <div class="pp-left-nav">
-            <a href="./" class="nav-link pp-nav-text" data-nav-key="home">HOME</a>
+            <a href="index.html" class="nav-link pp-nav-text" data-nav-key="home">HOME</a>
             <a
-              href="./menu.html"
+              href="menu.html"
               class="nav-link pp-nav-text pp-menu-trigger"
               data-nav-key="menu"
               data-menu-trigger
@@ -33,13 +33,13 @@
             >
               MENU
             </a>
-            <a href="./about.html" class="nav-link pp-nav-text" data-nav-key="about">ABOUT US</a>
-            <a href="./gallery.html" class="nav-link pp-nav-text" data-nav-key="gallery">GALLERY</a>
+            <a href="about.html" class="nav-link pp-nav-text" data-nav-key="about">ABOUT US</a>
+            <a href="gallery.html" class="nav-link pp-nav-text" data-nav-key="gallery">GALLERY</a>
           </div>
         </div>
 
         <div class="pp-hd-logo-zone">
-          <a href="./" class="pp-hd-logo-link" aria-label="Famous HD Biryani home">
+          <a href="index.html" class="pp-hd-logo-link" aria-label="Famous HD Biryani home">
             <img
               src="./center-hd-logo.webp"
               alt="Famous HD Biryani HD logo"
@@ -50,8 +50,8 @@
 
         <div class="premium-header-right">
           <div class="pp-right-nav">
-            <a href="/#contact" class="nav-link pp-nav-text" data-nav-key="contact">CONTACT</a>
-            <a href="/#location" class="nav-link pp-nav-text" data-nav-key="location">LOCATION</a>
+            <a href="index.html#contact" class="nav-link pp-nav-text" data-nav-key="contact">CONTACT</a>
+            <a href="index.html#location" class="nav-link pp-nav-text" data-nav-key="location">LOCATION</a>
           </div>
 
           <div class="premium-header-actions">
@@ -66,7 +66,7 @@
               </span>
             </button>
 
-            <a href="./menu.html" class="header-order-btn pp-order-online-btn" aria-label="Order online">
+            <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" target="_blank" rel="noopener noreferrer" class="header-order-btn pp-order-online-btn" aria-label="Order online">
               <span>ORDER ONLINE</span>
             </a>
           </div>
@@ -115,12 +115,12 @@ ${x()}
 
       <div class="mobile-menu-body">
         <nav class="premium-mobile-nav">
-          <a href="./" class="premium-nav-link" data-nav-key="home">HOME</a>
-          <a href="./menu.html" class="premium-nav-link" data-nav-key="menu">MENU</a>
-          <a href="./about.html" class="premium-nav-link" data-nav-key="about">ABOUT US</a>
-          <a href="./gallery.html" class="premium-nav-link" data-nav-key="gallery">GALLERY</a>
-          <a href="/#contact" class="premium-nav-link" data-nav-key="contact">CONTACT</a>
-          <a href="/#location" class="premium-nav-link" data-nav-key="location">LOCATION</a>
+          <a href="index.html" class="premium-nav-link" data-nav-key="home">HOME</a>
+          <a href="menu.html" class="premium-nav-link" data-nav-key="menu">MENU</a>
+          <a href="about.html" class="premium-nav-link" data-nav-key="about">ABOUT US</a>
+          <a href="gallery.html" class="premium-nav-link" data-nav-key="gallery">GALLERY</a>
+          <a href="index.html#contact" class="premium-nav-link" data-nav-key="contact">CONTACT</a>
+          <a href="index.html#location" class="premium-nav-link" data-nav-key="location">LOCATION</a>
         </nav>
 
         <button
@@ -139,7 +139,7 @@ ${x()}
         </button>
 
         <div class="mobile-menu-order">
-          <a href="./menu.html" class="mobile-menu-order-btn">
+          <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" target="_blank" rel="noopener noreferrer" class="mobile-menu-order-btn">
             ORDER ONLINE
           </a>
         </div>

@@ -2,7 +2,24 @@
 <html lang="en">
 
 <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com"> 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com"> 
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com"> 
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com"> 
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com"> 
+
     <meta charset="utf-8" />
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Famous HD Biryani | Authentic Hyderabadi Dum Biryani in McKinney TX</title>
     <meta name="description" content="Famous HD Biryani serves authentic Hyderabadi dum biryani, pulavs, tiffins and Indian specialties in McKinney Texas. Experience traditional slow cooked biryani made with premium basmati rice and aromatic spices.">
@@ -11,13 +28,7 @@
     <meta name="author" content="Famous HD Biryani">
     <link rel="canonical" href="https://famoushdbiryani.com/">
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.webp">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.webp">
-    <link rel="shortcut icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
-
+                                    
 
     <!-- Open Graph Metadata -->
     <meta property="og:title" content="Famous HD Biryani | Authentic Hyderabadi Dum Biryani">
@@ -44,6 +55,7 @@
      "@context": "https://schema.org",
      "@type": "Restaurant",
      "name": "Famous HD Biryani",
+      "logo": "https://famoushdbiryani.com/favicon-512.png",
      "url": "https://famoushdbiryani.com",
      "servesCuisine": "Hyderabadi Dum Biryani",
      "priceRange": "$$",
@@ -97,7 +109,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&amp;family=Poppins:wght@300;400;500;600&amp;display=swap"
         rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -396,12 +408,23 @@
 
         @media (max-width: 767px) {
             .halal-stamp-container {
-                top: 30px;
+                top: 28px;
                 right: 20px;
             }
 
             .halal-stamp {
-                width: 90px;
+                width: 60px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .halal-stamp-container {
+                top: 24px;
+                right: 16px;
+            }
+
+            .halal-stamp {
+                width: 50px;
             }
         }
 
@@ -440,9 +463,25 @@
                 margin: auto;
             }
         }
+
+        /* Dark Mode Override for Food Showcase Section */
+        .dark-theme .food-showcase-section,
+        .dark .food-showcase-section {
+            background-color: var(--bg-primary) !important;
+        }
+
+        .dark-theme .food-showcase-title,
+        .dark .food-showcase-title {
+            color: var(--text-primary) !important;
+        }
+
+        .dark-theme .food-showcase-subtitle,
+        .dark .food-showcase-subtitle {
+            color: var(--text-secondary) !important;
+        }
     </style>
 
-    <link rel="preload" as="image" href="/assets/biryani-hero-xy-TFKkh.webp">
+    <link rel="preload" as="image" href="/assets/biryani-hero-xy-TFKkh.webp" fetchpriority="high">
   <script type="module" crossorigin src="/assets/main-DrmoXfNs.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/scroll-to-top-ClLBnamA.js">
   <link rel="modulepreload" crossorigin href="/assets/premium-interactions-tdm8xTip.js">
@@ -460,6 +499,8 @@
                 alt="Authentic Hyderabadi Dum Biryani McKinney Texas - Traditional slow-cooked preparation"
                 class="w-full h-full object-cover"
                 src="/assets/biryani-hero-xy-TFKkh.webp"
+                fetchpriority="high"
+                decoding="async"
                 width="640"
                 height="640"
                  decoding="async"  loading="eager" />
@@ -496,15 +537,15 @@
                 meat, and hand-ground spices.
             </p>
             <div class="hero-buttons flex items-center justify-center gap-4">
-                <a href="./menu.html"
+                <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" rel="noopener noreferrer" target="_blank"
                     class="bg-primary hover:bg-primary-hover text-white align-center inline-flex text-center justify-center font-medium py-4 px-10 rounded shadow-[0_0_20px_rgba(200,164,93,0.4)] transition transform hover:-translate-y-1"><i
                         class="fas fa-motorcycle mr-2 mt-1"></i> DELIVERY</a>
-                <a href="./menu.html"
+                <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" rel="noopener noreferrer" target="_blank"
                     class="bg-transparent border-2 border-primary text-primary inline-flex text-center align-center justify-center hover:bg-primary hover:text-white font-medium py-4 px-10 rounded transition transform hover:-translate-y-1"><i
                         class="fas fa-shopping-bag mr-2 mt-1"></i> PICKUP</a>
             </div>
             <div class="hero-order-online">
-                <a href="/menu.html" class="order-online-btn">ORDER ONLINE</a>
+                <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" rel="noopener noreferrer" target="_blank" class="order-online-btn">ORDER ONLINE</a>
             </div>
         </div>
         <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce z-10">
@@ -549,10 +590,10 @@
     </section>
 
     <!-- NEW FOOD SHOWCASE SECTION -->
-    <section class="food-showcase-section">
+    <section class="food-showcase-section bg-surface-light dark:bg-surface-dark transition-colors duration-300">
         <div class="food-showcase-container">
-            <h2 class="food-showcase-title">Experience the Royal Flavours of Hyderabad</h2>
-            <p class="food-showcase-subtitle">Every dish is crafted with authentic spices, traditional dum cooking, and the rich culinary heritage of Hyderabad.</p>
+            <h2 class="food-showcase-title text-gray-900 dark:text-white">Experience the Royal Flavours of Hyderabad</h2>
+            <p class="food-showcase-subtitle text-gray-600 dark:text-gray-300">Every dish is crafted with authentic spices, traditional dum cooking, and the rich culinary heritage of Hyderabad.</p>
         </div>
         <div class="food-wrapper">
             <div class="food-track" id="dynamic-food-track">
@@ -621,7 +662,7 @@
                             Classic Hyderabadi dum biryani made with fragrant basmati rice, tender chicken, saffron, and
                             aromatic spices.
                         </p>
-                        <a href="./menu.html#biryanis-section"
+                        <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" rel="noopener noreferrer" target="_blank"
                             class="w-full flex justify-center items-center gap-2 border border-primary text-primary dark:text-primary hover:bg-primary hover:text-white font-medium py-2 rounded-full transition shadow-sm hover:shadow-md text-sm uppercase tracking-wide">
                             ORDER NOW <i class="fas fa-arrow-right text-[10px]"></i>
                         </a>
@@ -661,7 +702,7 @@
                         <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
                             Authentic Hyderabadi biryani layered with slow-cooked goat meat and aromatic basmati rice.
                         </p>
-                        <a href="./menu.html#biryanis-section"
+                        <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" rel="noopener noreferrer" target="_blank"
                             class="w-full flex justify-center items-center gap-2 border border-primary text-primary dark:text-primary hover:bg-primary hover:text-white font-medium py-2 rounded-full transition shadow-sm hover:shadow-md text-sm uppercase tracking-wide">
                             ORDER NOW <i class="fas fa-arrow-right text-[10px]"></i>
                         </a>
@@ -701,7 +742,7 @@
                         <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
                             Soft paneer cubes simmered in a rich, velvety tomato butter gravy with aromatic spices.
                         </p>
-                        <a href="./menu.html#veg-curries-section"
+                        <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" rel="noopener noreferrer" target="_blank"
                             class="w-full flex justify-center items-center gap-2 border border-primary text-primary dark:text-primary hover:bg-primary hover:text-white font-medium py-2 rounded-full transition shadow-sm hover:shadow-md text-sm uppercase tracking-wide">
                             ORDER NOW <i class="fas fa-arrow-right text-[10px]"></i>
                         </a>
@@ -740,7 +781,7 @@
                             Crispy bite-sized chicken tossed with curry leaves, red chillies, and bold South Indian
                             spices.
                         </p>
-                        <a href="./menu.html#non-veg-appetizers-section"
+                        <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" rel="noopener noreferrer" target="_blank"
                             class="w-full flex justify-center items-center gap-2 border border-primary text-primary dark:text-primary hover:bg-primary hover:text-white font-medium py-2 rounded-full transition shadow-sm hover:shadow-md text-sm uppercase tracking-wide">
                             ORDER NOW <i class="fas fa-arrow-right text-[10px]"></i>
                         </a>
@@ -778,7 +819,7 @@
                         <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
                             Crispy South Indian dosa filled with spiced potato masala and served with chutneys.
                         </p>
-                        <a href="./menu.html#tiffin-section"
+                        <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" rel="noopener noreferrer" target="_blank"
                             class="w-full flex justify-center items-center gap-2 border border-primary text-primary dark:text-primary hover:bg-primary hover:text-white font-medium py-2 rounded-full transition shadow-sm hover:shadow-md text-sm uppercase tracking-wide">
                             ORDER NOW <i class="fas fa-arrow-right text-[10px]"></i>
                         </a>
@@ -816,7 +857,7 @@
                         <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
                             Rich creamy yogurt drink blended with sweet ripe mango.
                         </p>
-                        <a href="./menu.html#beverages-section"
+                        <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" rel="noopener noreferrer" target="_blank"
                             class="w-full flex justify-center items-center gap-2 border border-primary text-primary dark:text-primary hover:bg-primary hover:text-white font-medium py-2 rounded-full transition shadow-sm hover:shadow-md text-sm uppercase tracking-wide">
                             ORDER NOW <i class="fas fa-arrow-right text-[10px]"></i>
                         </a>
@@ -1206,18 +1247,26 @@
                         Authentic flavors, royal heritage, and a dining experience that stays with you. Experience the
                         best Indian cuisine in McKinney.
                     </p>
-                    <div class="flex space-x-4">
+                    <div class="flex space-x-4 flex-wrap gap-y-4">
                         <a class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-white"
-                            href="https://www.youtube.com/channel/UCGtKLy4h-1JdZNoP-2Kq94A" target="_blank" rel="noopener noreferrer">
+                            href="https://www.youtube.com/channel/UCGtKLy4h-1JdZNoP-2Kq94A" target="_blank" rel="noopener noreferrer" title="YouTube">
                             <i class="fab fa-youtube"></i>
                         </a>
                         <a class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-white"
-                            href="https://www.instagram.com/famous_hdbiryani/" target="_blank" rel="noopener noreferrer">
+                            href="https://www.instagram.com/famoushd_biryani" target="_blank" rel="noopener noreferrer" title="Instagram">
                             <i class="fab fa-instagram"></i>
                         </a>
                         <a class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-white"
-                            href="https://facebook.com/" target="_blank" rel="noopener noreferrer">
+                            href="https://www.facebook.com/people/Famous-HD-Biryani/61572126655900/" target="_blank" rel="noopener noreferrer" title="Facebook">
                             <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-white"
+                            href="https://x.com/Famoushdbiryani" target="_blank" rel="noopener noreferrer" title="X (Twitter)">
+                            <i class="fab fa-x-twitter"></i>
+                        </a>
+                        <a class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition text-white"
+                            href="https://www.threads.net/@famoushd_biryani" target="_blank" rel="noopener noreferrer" title="Threads">
+                            <i class="fab fa-threads"></i>
                         </a>
                     </div>
                 </div>
@@ -1275,7 +1324,7 @@
 
     <!-- GLOBAL STICKY ORDER BUTTON -->
     <div id="mobile-order-bar">
-      <a href="./menu.html" class="mobile-order-button">
+      <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" rel="noopener noreferrer" target="_blank" class="mobile-order-button">
         ORDER ONLINE
       </a>
     </div>
