@@ -2,10 +2,10 @@ import"./scroll-to-top-ClLBnamA.js";import"./premium-interactions-tdm8xTip.js";c
     alt="Famous HD Biryani Dish"
     class="food-card"
     src="${typeof e=="string"?e:e.default||e}"
-    loading="lazy"
+    loading="eager"
     ${a?' aria-hidden="true"':""}
      width="640" height="360"  decoding="async" />`;for(let e=_.length-1;e>0;e--){const a=Math.floor(Math.random()*(e+1));[_[e],_[a]]=[_[a],_[e]]}const l=`<div class="food-row">
                 ${_.map(e=>n(e)).join("")}
             </div>`,g=`<div class="food-row" aria-hidden="true">
                 ${_.map(e=>n(e,!0)).join("")}
-            </div>`;s.innerHTML=l+g;const m=s.querySelectorAll("img");let t=0;const b=m.length,i=()=>{t++,t>=b&&s.classList.add("is-animated")};m.forEach(e=>{e.complete?i():(e.addEventListener("load",i,{once:true}),e.addEventListener("error",i,{once:true}))})}
+            </div>`;s.innerHTML=l+g;requestAnimationFrame(()=>{requestAnimationFrame(()=>{s.classList.add("is-animated")})});setTimeout(()=>{if(!s.classList.contains("is-animated")){s.classList.add("is-animated")}},200)}
