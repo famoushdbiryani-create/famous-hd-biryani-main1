@@ -106,6 +106,80 @@
         .animate-golden-shine {
             animation: golden-shine 3s infinite linear;
         }
+
+        /* Grand Opening Popup Premium Styles */
+        #grand-opening-popup {
+            perspective: 1000px;
+        }
+
+        .popup-glass {
+            background: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(200, 164, 93, 0.4);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        .gold-glow {
+            text-shadow: 0 0 15px rgba(200, 164, 93, 0.3);
+        }
+
+        @keyframes popup-scale {
+            from { transform: scale(0.9) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .animate-popup {
+            animation: popup-scale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Grand Opening Offer System Styles */
+        .offer-marquee-container {
+            background: #C8A45D;
+            color: #121212;
+            padding: 10px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            position: sticky;
+            top: 70px;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        @media (min-width: 1024px) {
+            .offer-marquee-container { top: 80px; }
+        }
+        .offer-marquee-content {
+            display: inline-block;
+            animation: marquee-infinite 80s linear infinite;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 13px;
+        }
+        @keyframes marquee-infinite {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+        .hero-offer-badge {
+            background: rgba(200, 164, 93, 0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid #C8A45D;
+            color: #C8A45D;
+            padding: 6px 20px;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            letter-spacing: 2px;
+            font-size: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(200, 164, 93, 0.2);
+            animation: glow-pulse 2s infinite alternate;
+        }
+        @keyframes glow-pulse {
+            from { box-shadow: 0 0 10px rgba(200, 164, 93, 0.2); }
+            to { box-shadow: 0 0 25px rgba(200, 164, 93, 0.5); }
+        }
     </style>
   <script type="module" crossorigin src="/assets/scroll-to-top-ClLBnamA.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/scroll-to-top-RfZbNSjG.css">
@@ -157,10 +231,7 @@
                         of Texas, USA and you irrevocably submit to the exclusive jurisdiction of the courts in that
                         State or location.</p>
 
-                    <div class="mt-12 p-6 bg-primary/10 rounded-xl border border-primary/20">
-                        <p class="text-sm italic">Note: These Terms & Conditions were restored as a placeholder. Please
-                            review and update with your actual legal terms.</p>
-                    </div>
+                    <p class="mt-8 text-sm text-gray-500 italic">Last Updated: May 8, 2026</p>
                 </div>
             </div>
 
@@ -209,6 +280,111 @@
         ORDER ONLINE
       </a>
     </div>
+
+    <!-- Grand Opening Offer System -->
+    <script>
+        (function() {
+            const CONFIG = {
+                expiryDate: new Date('2026-05-15T23:59:59'),
+                popupDelay: 800,
+                marqueeText: "NOW OPEN • FLAT 20% OFF ON EVERY ORDER • FIRST WEEK OFFER • AUTHENTIC HYDERABAD DUM BIRYANI • VISIT FAMOUS HD BIRYANI TODAY • "
+            };
+
+            const now = new Date();
+            if (now > CONFIG.expiryDate) return;
+
+            // 1. Inject Sliding Announcement Bar
+            const headerRoot = document.querySelector('[data-site-header-root]');
+            if (headerRoot) {
+                const marquee = document.createElement('div');
+                marquee.className = 'offer-marquee-container';
+                marquee.innerHTML = `<div class="offer-marquee-content">${CONFIG.marqueeText.repeat(10)}</div>`;
+                headerRoot.after(marquee);
+            }
+
+            // 2. Inject Hero Highlight (Not applicable for this page as it has no hero)
+
+            // 3. Inject and Manage Popup
+            const injectPopup = () => {
+                const popupHTML = `
+                <div id="grand-opening-popup" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4">
+                    <div id="popup-overlay" class="absolute inset-0 bg-black/80 backdrop-blur-md opacity-0 transition-opacity duration-700 ease-out"></div>
+                    <div class="popup-content relative popup-glass rounded-2xl max-w-lg w-full overflow-hidden opacity-0 z-10 p-10 md:p-14 text-center transform scale-95 transition-all duration-700 ease-out">
+                        <button id="close-popup" class="absolute top-6 right-6 text-gray-400 hover:text-primary transition-colors duration-300 p-2" aria-label="Close Popup">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                        <div class="flex justify-center mb-6">
+                            <div class="w-12 h-[1px] bg-primary/40 my-auto"></div>
+                            <i class="fas fa-crown text-primary mx-4 text-2xl gold-glow"></i>
+                            <div class="w-12 h-[1px] bg-primary/40 my-auto"></div>
+                        </div>
+                        <div class="mb-8">
+                            <span class="font-display uppercase tracking-[0.4em] text-primary text-xs md:text-sm mb-3 block font-semibold">Grand Opening Celebration</span>
+                            <h2 class="font-display text-5xl md:text-6xl font-bold text-white uppercase tracking-tighter gold-gradient-text gold-glow mb-4">NOW OPEN</h2>
+                            <div class="h-[1px] w-24 bg-gradient-to-r from-transparent via-primary/50 to-transparent mx-auto"></div>
+                        </div>
+                        <div class="mb-10 transform hover:scale-105 transition-transform duration-500">
+                            <h3 class="text-4xl md:text-5xl font-bold text-white mb-1 tracking-tight">FLAT 20% OFF</h3>
+                            <p class="text-primary font-bold tracking-[0.25em] text-xs md:text-sm uppercase">ON EVERY ORDER</p>
+                            <div class="mt-6 flex flex-col items-center">
+                                <span class="text-primary/90 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] px-5 py-2 border border-primary/20 rounded-full bg-primary/5">
+                                    FOR THE FIRST WEEK ONLY
+                                </span>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 font-body text-sm md:text-base leading-relaxed mb-10 opacity-90">
+                            Experience authentic Hyderabad flavors in McKinney, Texas. Celebrate our launch with 20% savings today.
+                        </p>
+                        <a href="./#contact" id="popup-cta" class="inline-block w-full bg-primary hover:bg-primary-hover text-black font-bold py-5 px-10 rounded shadow-[0_10px_30px_rgba(200,164,93,0.3)] transition-all duration-300 transform hover:-translate-y-1.5 hover:shadow-[0_15px_40px_rgba(200,164,93,0.5)] text-sm md:text-base uppercase tracking-widest">
+                            Visit Us Today
+                        </a>
+                    </div>
+                </div>`;
+                document.body.insertAdjacentHTML('beforeend', popupHTML);
+
+                const popup = document.getElementById('grand-opening-popup');
+                const overlay = document.getElementById('popup-overlay');
+                const content = popup.querySelector('.popup-content');
+                const closeBtn = document.getElementById('close-popup');
+                const ctaBtn = document.getElementById('popup-cta');
+
+                const showPopup = () => {
+                    popup.classList.remove('hidden');
+                    popup.classList.add('flex');
+                    requestAnimationFrame(() => {
+                        overlay.classList.add('opacity-100');
+                        content.classList.remove('scale-95', 'opacity-0');
+                        content.classList.add('scale-100', 'opacity-100');
+                    });
+                };
+
+                const hidePopup = () => {
+                    overlay.classList.remove('opacity-100');
+                    content.classList.remove('scale-100', 'opacity-100');
+                    content.classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        popup.classList.remove('flex');
+                        popup.classList.add('hidden');
+                    }, 700);
+                };
+
+                // Frequency Management: Show only once per session
+                if (!sessionStorage.getItem('grandOpeningPopupShown')) {
+                    setTimeout(showPopup, CONFIG.popupDelay);
+                    sessionStorage.setItem('grandOpeningPopupShown', 'true');
+                }
+
+                closeBtn.addEventListener('click', hidePopup);
+                overlay.addEventListener('click', hidePopup);
+                ctaBtn.addEventListener('click', hidePopup);
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && !popup.classList.contains('hidden')) hidePopup();
+                });
+            };
+
+            injectPopup();
+        })();
+    </script>
 
 </body>
 </html>

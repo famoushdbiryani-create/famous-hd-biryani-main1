@@ -20,12 +20,31 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
                     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Menu | Famous HD Biryani | Authentic Hyderabadi Cuisine McKinney</title>
-    <meta name="description"
-        content="Explore our extensive menu of Hyderabadi Dum Biryanis, Tiffin specials, and traditional Indian curries in McKinney, TX. All meat is 100% Halal certified.">
+    <title>Menu | Famous HD Biryani | Authentic Hyderabadi Cuisine McKinney TX</title>
+    <meta name="description" content="Explore our extensive menu of Hyderabadi Dum Biryanis, Tiffin specials, and traditional Indian curries in McKinney, TX. All meat is 100% Halal certified.">
+    <meta name="keywords" content="Hyderabadi Biryani Menu McKinney, Halal Indian Food McKinney TX, Indian Curry Menu McKinney, Dum Biryani Prices McKinney, Best Indian Menu Texas">
+    
+    <!-- GEO Meta Tags -->
+    <meta name="geo.region" content="US-TX">
+    <meta name="geo.placename" content="McKinney">
+    <meta name="geo.position" content="33.1976;-96.6153">
+    <meta name="ICBM" content="33.1976, -96.6153">
+
+    <!-- Canonical URL -->
     <link rel="canonical" href="https://famoushdbiryani.com/menu.html">
-    <meta name="keywords"
-        content="Hyderabadi Biryani Menu McKinney, Halal Indian Food McKinney TX, Indian Curry Menu McKinney, Dum Biryani Prices McKinney, Best Indian Menu Texas">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Menu - Famous HD Biryani McKinney TX">
+    <meta property="og:description" content="Explore our extensive menu of Hyderabadi Dum Biryanis, Tiffin specials, and traditional Indian curries.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://famoushdbiryani.com/menu.html">
+    <meta property="og:image" content="/assets/menu_hyderabadi_chicken_dum_biryani-BPtVzdCl.webp">
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Menu - Famous HD Biryani">
+    <meta name="twitter:description" content="Explore our extensive menu of Hyderabadi Dum Biryanis, Tiffin specials, and traditional Indian curries.">
+    <meta name="twitter:image" content="/assets/menu_hyderabadi_chicken_dum_biryani-BPtVzdCl.webp">
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&amp;family=Poppins:wght@300;400;500;600&amp;display=swap"
@@ -140,6 +159,64 @@
             border-radius: 50%;
         }
 
+        /* Grand Opening Offer System Styles */
+        .offer-marquee-container {
+            background: #C8A45D;
+            color: #121212;
+            padding: 10px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            position: sticky;
+            top: 70px;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        @media (min-width: 1024px) {
+            .offer-marquee-container { top: 80px; }
+        }
+        .offer-marquee-content {
+            display: inline-block;
+            animation: marquee-infinite 80s linear infinite;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 13px;
+        }
+        @keyframes marquee-infinite {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+        .hero-offer-badge {
+            background: rgba(200, 164, 93, 0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid #C8A45D;
+            color: #C8A45D;
+            padding: 6px 20px;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            letter-spacing: 2px;
+            font-size: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(200, 164, 93, 0.2);
+            animation: glow-pulse 2s infinite alternate;
+        }
+        @keyframes glow-pulse {
+            from { box-shadow: 0 0 10px rgba(200, 164, 93, 0.2); }
+            to { box-shadow: 0 0 25px rgba(200, 164, 93, 0.5); border-color: #E5C585; }
+        }
+        .popup-glass {
+            background: rgba(18, 18, 18, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(200, 164, 93, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .gold-glow {
+            text-shadow: 0 0 15px rgba(200, 164, 93, 0.3);
+        }
+
         input:checked+.slider {
             background-color: transparent;
             border-color: #16A34A;
@@ -148,6 +225,19 @@
         input:checked+.slider:before {
             transform: translateX(24px);
             background-color: #16A34A;
+        }
+
+        /* Search Highlighting */
+        .search-highlight {
+            background-color: rgba(200, 164, 93, 0.25);
+            color: #C8A45D;
+            padding: 0 2px;
+            border-radius: 2px;
+            font-weight: 600;
+        }
+        .dark .search-highlight {
+            background-color: rgba(200, 164, 93, 0.35);
+            color: #E5C585;
         }
     </style>
 
@@ -506,7 +596,7 @@
                 alt="Authentic Premium Dining Table Background"
                 class="w-full h-full object-cover opacity-60"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuCddDlhDau3J4Nd4F4nn96psw45SbRzfgK_Ttgn_Led16oc5ZDp8qFA0M50mKXXo0FVaVpN1lKWsaglB3fcN05_xuQ9LiKdGBoSoy5FnQyeKGqFF214kNCQ-ZqjxKd6DL2lmfrNeVYX9Q5QHCzT5erKSlUTGEmUpoAbmUM4p-S5W0_wgV9xX3FHt3xb4wCjwX753N0Z21DQVLimbIFudYVQcQ6DFKRvjGqrby6yJe6DXDd7TUA3lyZgGcmldrOQ77womCoy-LEnwZja"
-                 width="1376" height="768"  decoding="async"  loading="eager" />
+                 width="1376" height="768"  decoding="async"  loading="eager" fetchpriority="high" />
             <div
                 class="absolute inset-0 bg-gradient-to-t from-background-light dark:from-background-dark via-transparent to-black/50">
             </div>
@@ -519,7 +609,7 @@
       alt="100% Halal Certified Indian Food McKinney"
       class="menu-halal-stamp"
       src="/assets/halal-CcoUxlhx.webp"
-       width="600" height="600"  decoding="async"  loading="lazy" />
+       width="600" height="600"  decoding="async"  loading="eager" fetchpriority="high" />
 </picture>
         </div>
         <div class="relative z-10 text-center max-w-4xl mx-auto px-4">
@@ -547,7 +637,7 @@
 
     <!-- Category Icon Navigation Bar -->
     <div id="menu-category-bar"
-        class="sticky z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md shadow-md border-b border-primary/20 py-1 transition-colors duration-300">
+        class="sticky z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md shadow-md border-b border-primary/20 py-1 transition-all duration-500">
         <div class="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8 relative">
             <div
                 class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background-light dark:from-background-dark to-transparent z-10 lg:hidden pointer-events-none">
@@ -738,6 +828,37 @@
     <section class="py-10 bg-surface-light dark:bg-surface-dark min-h-[500px] transition-colors duration-300 pb-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" id="menu-panels-container">
 
+            <!-- No Results Found -->
+            <div id="no-results-container" class="hidden text-center py-20 px-4 transition-all duration-500 animate-[fadeSlideUp_0.5s_ease-out] relative overflow-hidden rounded-[2.5rem] border border-primary/10 bg-surface-light dark:bg-surface-dark shadow-inner">
+                <!-- Decorative Background Mandala (Subtle) -->
+                <div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none bg-mandala-pattern scale-150"></div>
+                
+                <div class="relative z-10">
+                    <div class="mb-8">
+                        <div class="w-32 h-32 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-primary/20 shadow-lg relative">
+                            <i class="fas fa-utensils text-5xl text-primary/30 absolute transform -rotate-12 translate-x-[-20px]"></i>
+                            <i class="fas fa-search text-5xl text-primary/50 relative z-10"></i>
+                            <i class="fas fa-leaf text-3xl text-veg-green/30 absolute transform rotate-12 translate-x-[25px] translate-y-[10px]"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-3xl md:text-4xl font-display font-bold text-gray-900 dark:text-white mb-4 tracking-tight">No matching dishes found</h3>
+                    <p class="text-gray-500 dark:text-gray-400 font-body text-lg max-w-md mx-auto mb-10 leading-relaxed">
+                        We couldn't find any dishes matching your current selection. Try adjusting your search or filters to explore more of our menu.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <button id="reset-filters-btn" class="w-full sm:w-auto bg-primary hover:bg-primary-hover text-white px-10 py-4 rounded-full font-bold transition-all duration-300 shadow-lg shadow-primary/20 uppercase tracking-widest text-sm flex items-center justify-center gap-2">
+                            <i class="fas fa-filter-circle-xmark"></i>
+                            Clear all filters
+                        </button>
+                        <button onclick="document.getElementById('menu-search').focus()" class="w-full sm:w-auto bg-surface-light dark:bg-surface-dark text-gray-600 dark:text-gray-400 px-8 py-4 rounded-full font-bold transition-all duration-300 border border-gray-200 dark:border-gray-800 hover:border-primary/30 uppercase tracking-widest text-xs flex items-center justify-center gap-2">
+                            <i class="fas fa-keyboard"></i>
+                            Try a different search
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Category Container -->
             <div id="quick-bites-section"
                 class="menu-category hidden opacity-0 translate-y-8 transition-all duration-400 ease-out mb-8 md:mb-16">
@@ -772,7 +893,7 @@
       alt="Authentic Aloo Samosa (2) - Famous HD Biryani McKinney"
       class="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
       src="/assets/menu_aloo_samosa-DhApx4gD.webp"
-      loading="eager"
+      loading="lazy"
        width="640" height="640"  decoding="async" />
 </picture>
                             </div>
@@ -822,7 +943,7 @@
       alt="Authentic Onion Pakora - Famous HD Biryani McKinney"
       class="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
       src="/assets/menu_onion_pakora-D_4qed9w.webp"
-      loading="eager"
+      loading="lazy"
        width="640" height="640"  decoding="async" />
 </picture>
                             </div>
@@ -10891,25 +11012,42 @@
             /* -------------------------------------------------------------
                IntersectionObserver: Auto-highlight active category on scroll
                ------------------------------------------------------------- */
-            const sectionObserver = new IntersectionObserver((entries) => {
+            // Responsive rootMargin based on header height + category bar
+            const getRootMargin = () => {
+                const isMobile = window.innerWidth < 768;
+                return isMobile ? '-160px 0px -60% 0px' : '-180px 0px -60% 0px';
+            };
+
+            let sectionObserver = new IntersectionObserver((entries) => {
                 if (isScrollingFromClick) return;
 
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const sectionId = entry.target.id;
-                        // Only update if section is actually visible (not filtered out)
-                        if (entry.target.style.display !== 'none') {
-                            setActiveTab(sectionId);
-                        }
+                    if (entry.isIntersecting && entry.target.style.display !== 'none') {
+                        setActiveTab(entry.target.id);
                     }
                 });
             }, {
-                // The rootMargin creates a narrow detection band near the top of the viewport
-                // (below the sticky header + category bar). Negative top = push detection down,
-                // large negative bottom = only detect elements near the top.
-                rootMargin: '-180px 0px -60% 0px',
+                rootMargin: getRootMargin(),
                 threshold: 0
             });
+
+            // Re-observe on resize to update rootMargin
+            window.addEventListener('resize', () => {
+                sectionObserver.disconnect();
+                sectionObserver = new IntersectionObserver((entries) => {
+                    if (isScrollingFromClick) return;
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && entry.target.style.display !== 'none') {
+                            setActiveTab(entry.target.id);
+                        }
+                    });
+                }, {
+                    rootMargin: getRootMargin(),
+                    threshold: 0
+                });
+                sections.forEach(section => sectionObserver.observe(section));
+            });
+
 
             sections.forEach(section => sectionObserver.observe(section));
 
@@ -10918,6 +11056,25 @@
                ------------------------------------------------------------- */
             const vegToggle = document.getElementById('veg-only-filter');
             const searchInput = document.getElementById('menu-search');
+            const clearBtn = document.getElementById('search-clear-btn');
+            const categoryBar = document.getElementById('menu-category-bar');
+            const noResults = document.getElementById('no-results-container');
+            const resetBtn = document.getElementById('reset-filters-btn');
+
+            // Store original text for highlighting
+            const dishCards = document.querySelectorAll('.menu-item-card');
+            dishCards.forEach(card => {
+                const nameEl = card.querySelector('.dish-name');
+                const descEl = card.querySelector('.dish-desc');
+                if (nameEl) card.dataset.originalName = nameEl.textContent.trim();
+                if (descEl) card.dataset.originalDesc = descEl.textContent.trim();
+            });
+
+            function highlightText(text, term) {
+                if (!term || term.length < 2) return text;
+                const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                return text.replace(regex, '<span class="search-highlight">$1</span>');
+            }
 
             // Persistence: Load filter state
             const savedFilter = localStorage.getItem("vegFilterState");
@@ -10927,7 +11084,9 @@
 
             function filterMenu() {
                 const isVegOnly = vegToggle.checked;
-                const searchVal = searchInput.value.toLowerCase();
+                const searchVal = searchInput.value.toLowerCase().trim();
+                let firstVisibleSectionId = null;
+                let currentActiveStillVisible = false;
 
                 sections.forEach(section => {
                     const cards = section.querySelectorAll('.menu-item-card');
@@ -10935,15 +11094,26 @@
 
                     cards.forEach(card => {
                         const isVeg = card.getAttribute('data-veg') === 'true';
-                        const searchStr = card.getAttribute('data-search');
+                        const searchStr = card.getAttribute('data-search') || "";
+                        const nameEl = card.querySelector('.dish-name');
+                        const descEl = card.querySelector('.dish-desc');
 
                         let show = true;
                         if (isVegOnly && !isVeg) show = false;
-                        if (searchVal && !searchStr.includes(searchVal)) show = false;
+                        if (searchVal && !searchStr.toLowerCase().includes(searchVal)) show = false;
 
                         if (show) {
                             card.style.display = "flex";
                             catVisibleCount++;
+                            
+                            // Apply highlighting
+                            if (searchVal && searchVal.length >= 2) {
+                                if (nameEl) nameEl.innerHTML = highlightText(card.dataset.originalName, searchVal);
+                                if (descEl) descEl.innerHTML = highlightText(card.dataset.originalDesc, searchVal);
+                            } else {
+                                if (nameEl) nameEl.textContent = card.dataset.originalName;
+                                if (descEl) descEl.textContent = card.dataset.originalDesc;
+                            }
                         } else {
                             card.style.display = "none";
                         }
@@ -10954,10 +11124,60 @@
                     if (catVisibleCount > 0) {
                         if (tab) tab.style.display = "flex";
                         section.style.display = "";
+                        if (!firstVisibleSectionId) firstVisibleSectionId = section.id;
+                        if (section.id === activeSectionId) currentActiveStillVisible = true;
                     } else {
                         if (tab) tab.style.display = "none";
                         section.style.display = "none";
                     }
+                });
+
+                // Show/Hide no results container and category bar
+                if (noResults) {
+                    const isTransitioningToNoResults = !firstVisibleSectionId && noResults.classList.contains('hidden');
+                    
+                    if (!firstVisibleSectionId) {
+                        noResults.classList.remove('hidden');
+                        if (categoryBar) categoryBar.classList.add('opacity-0', 'pointer-events-none');
+                        
+                        // Scroll to the "No Results" message only when it first appears
+                        if (isTransitioningToNoResults) {
+                            const controls = document.getElementById('menu-filter-controls');
+                            if (controls) controls.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    } else {
+                        noResults.classList.add('hidden');
+                        if (categoryBar) categoryBar.classList.remove('opacity-0', 'pointer-events-none');
+                    }
+                }
+
+                // Handle active tab if current one is hidden
+                if (!currentActiveStillVisible && firstVisibleSectionId) {
+                    const controls = document.getElementById('menu-filter-controls');
+                    if (controls) {
+                        controls.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    setActiveTab(firstVisibleSectionId);
+                }
+
+                // Update search clear button
+                if (clearBtn) {
+                    if (searchInput.value.length > 0) {
+                        clearBtn.classList.remove('hidden');
+                    } else {
+                        clearBtn.classList.add('hidden');
+                    }
+                }
+            }
+
+            // Reset filters logic
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    vegToggle.checked = false;
+                    localStorage.setItem("vegFilterState", "all");
+                    searchInput.value = '';
+                    filterMenu();
+                    searchInput.focus();
                 });
             }
 
@@ -10971,24 +11191,14 @@
             // Initial filter application
             filterMenu();
 
-
             /* -------------------------------------------------------------
                Feature 2: Search Bar Clear (X) Button
                ------------------------------------------------------------- */
-            const clearBtn = document.getElementById('search-clear-btn');
             if (clearBtn && searchInput) {
-                searchInput.addEventListener('input', function () {
-                    if (searchInput.value.length > 0) {
-                        clearBtn.classList.remove('hidden');
-                    } else {
-                        clearBtn.classList.add('hidden');
-                    }
-                });
-
                 clearBtn.addEventListener('click', function () {
                     searchInput.value = '';
                     clearBtn.classList.add('hidden');
-                    searchInput.dispatchEvent(new Event('input'));
+                    filterMenu();
                     searchInput.focus();
                 });
             }
@@ -11082,21 +11292,8 @@
             </div>
         </div>
     </footer>
-    <script>
-        // Veg Toggle Functionality
-        document.addEventListener('DOMContentLoaded', () => {
-            const vegToggle = document.getElementById('veg-toggle');
-            if (vegToggle) {
-                vegToggle.addEventListener('change', function () {
-                    if (this.checked) {
-                        document.body.classList.add('veg-only');
-                    } else {
-                        document.body.classList.remove('veg-only');
-                    }
-                });
-            }
-        });
-    </script>
+    <!-- No separate veg-toggle script needed as it is handled in the main filterMenu logic above -->
+
 
 
     <!-- Custom Cursor Setup -->
@@ -11118,5 +11315,116 @@
       </a>
     </div>
 
+    <!-- GRAND OPENING OFFER SYSTEM LOGIC -->
+    <script>
+        (function() {
+            const CONFIG = {
+                expiryDate: new Date('2026-05-15T23:59:59'),
+                popupDelay: 800,
+                marqueeText: "NOW OPEN • FLAT 20% OFF ON EVERY ORDER • FIRST WEEK OFFER • AUTHENTIC HYDERABAD DUM BIRYANI • VISIT FAMOUS HD BIRYANI TODAY • "
+            };
+
+            const now = new Date();
+            if (now > CONFIG.expiryDate) return;
+
+            // 1. Inject Sliding Announcement Bar
+            const headerRoot = document.querySelector('[data-site-header-root]');
+            if (headerRoot) {
+                const marquee = document.createElement('div');
+                marquee.className = 'offer-marquee-container';
+                marquee.innerHTML = `<div class="offer-marquee-content">${CONFIG.marqueeText.repeat(10)}</div>`;
+                headerRoot.after(marquee);
+            }
+
+            // 2. Inject Hero Highlight
+            const heroContent = document.querySelector('.hero-content');
+            if (heroContent) {
+                const badge = document.createElement('div');
+                badge.className = 'hero-offer-badge';
+                badge.innerHTML = 'GRAND OPENING WEEK • 20% OFF';
+                heroContent.prepend(badge);
+            }
+
+            // 3. Inject and Manage Popup
+            const injectPopup = () => {
+                const popupHTML = `
+                <div id="grand-opening-popup" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4">
+                    <div id="popup-overlay" class="absolute inset-0 bg-black/80 backdrop-blur-md opacity-0 transition-opacity duration-700 ease-out"></div>
+                    <div class="popup-content relative popup-glass rounded-2xl max-w-lg w-full overflow-hidden opacity-0 z-10 p-10 md:p-14 text-center transform scale-95 transition-all duration-700 ease-out">
+                        <button id="close-popup" class="absolute top-6 right-6 text-gray-400 hover:text-primary transition-colors duration-300 p-2" aria-label="Close Popup">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                        <div class="flex justify-center mb-6">
+                            <div class="w-12 h-[1px] bg-primary/40 my-auto"></div>
+                            <i class="fas fa-crown text-primary mx-4 text-2xl gold-glow"></i>
+                            <div class="w-12 h-[1px] bg-primary/40 my-auto"></div>
+                        </div>
+                        <div class="mb-8">
+                            <span class="font-display uppercase tracking-[0.4em] text-primary text-xs md:text-sm mb-3 block font-semibold">Grand Opening Celebration</span>
+                            <h2 class="font-display text-5xl md:text-6xl font-bold text-white uppercase tracking-tighter gold-gradient-text gold-glow mb-4">NOW OPEN</h2>
+                            <div class="h-[1px] w-24 bg-gradient-to-r from-transparent via-primary/50 to-transparent mx-auto"></div>
+                        </div>
+                        <div class="mb-10 transform hover:scale-105 transition-transform duration-500">
+                            <h3 class="text-4xl md:text-5xl font-bold text-white mb-1 tracking-tight">FLAT 20% OFF</h3>
+                            <p class="text-primary font-bold tracking-[0.25em] text-xs md:text-sm uppercase">ON EVERY ORDER</p>
+                            <div class="mt-6 flex flex-col items-center">
+                                <span class="text-primary/90 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] px-5 py-2 border border-primary/20 rounded-full bg-primary/5">
+                                    FOR THE FIRST WEEK ONLY
+                                </span>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 font-body text-sm md:text-base leading-relaxed mb-10 opacity-90">
+                            Experience authentic Hyderabad flavors in McKinney, Texas. Celebrate our launch with 20% savings today.
+                        </p>
+                        <a href="#contact" id="popup-cta" class="inline-block w-full bg-primary hover:bg-primary-hover text-black font-bold py-5 px-10 rounded shadow-[0_10px_30px_rgba(200,164,93,0.3)] transition-all duration-300 transform hover:-translate-y-1.5 hover:shadow-[0_15px_40px_rgba(200,164,93,0.5)] text-sm md:text-base uppercase tracking-widest">
+                            Visit Us Today
+                        </a>
+                    </div>
+                </div>`;
+                document.body.insertAdjacentHTML('beforeend', popupHTML);
+
+                const popup = document.getElementById('grand-opening-popup');
+                const overlay = document.getElementById('popup-overlay');
+                const content = popup.querySelector('.popup-content');
+                const closeBtn = document.getElementById('close-popup');
+                const ctaBtn = document.getElementById('popup-cta');
+
+                const showPopup = () => {
+                    popup.classList.remove('hidden');
+                    popup.classList.add('flex');
+                    requestAnimationFrame(() => {
+                        overlay.classList.add('opacity-100');
+                        content.classList.remove('scale-95', 'opacity-0');
+                        content.classList.add('scale-100', 'opacity-100');
+                    });
+                };
+
+                const hidePopup = () => {
+                    overlay.classList.remove('opacity-100');
+                    content.classList.remove('scale-100', 'opacity-100');
+                    content.classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        popup.classList.remove('flex');
+                        popup.classList.add('hidden');
+                    }, 700);
+                };
+
+                // Frequency Management: Show only once per session
+                if (!sessionStorage.getItem('grandOpeningPopupShown')) {
+                    setTimeout(showPopup, CONFIG.popupDelay);
+                    sessionStorage.setItem('grandOpeningPopupShown', 'true');
+                }
+
+                closeBtn.addEventListener('click', hidePopup);
+                overlay.addEventListener('click', hidePopup);
+                ctaBtn.addEventListener('click', hidePopup);
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && !popup.classList.contains('hidden')) hidePopup();
+                });
+            };
+
+            injectPopup();
+        })();
+    </script>
 </body>
 </html>
