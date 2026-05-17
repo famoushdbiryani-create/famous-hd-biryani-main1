@@ -1482,13 +1482,14 @@
         style="top: 0; left: 0; transform: translate3d(0,0,0); will-change: transform;"></div>
 
 
-    <!-- GRAND OPENING OFFER SYSTEM LOGIC -->
+    <!-- SUNDAY SPECIAL OFFER SYSTEM LOGIC -->
     <script>
         (function() {
+            // Sunday Special Offer — auto-expires at end of today (May 17, 2026)
             const CONFIG = {
-                expiryDate: new Date('2026-05-15T23:59:59'),
+                expiryDate: new Date('2026-05-17T23:59:59'),
                 popupDelay: 800,
-                marqueeText: "NOW OPEN • FLAT 20% OFF ON EVERY ORDER • FIRST WEEK OFFER • AUTHENTIC HYDERABAD DUM BIRYANI • VISIT FAMOUS HD BIRYANI TODAY • "
+                marqueeText: "☀️ SUNDAY SPECIAL • FLAT 10% OFF ON EVERY ORDER • TODAY ONLY • AUTHENTIC HYDERABAD DUM BIRYANI • FAMOUS HD BIRYANI McKINNEY • "
             };
 
             const now = new Date();
@@ -1508,7 +1509,7 @@
             if (heroContent) {
                 const badge = document.createElement('div');
                 badge.className = 'hero-offer-badge';
-                badge.innerHTML = 'GRAND OPENING WEEK • 20% OFF';
+                badge.innerHTML = 'SUNDAY SPECIAL • 10% OFF TODAY';
                 heroContent.prepend(badge);
             }
 
@@ -1523,28 +1524,28 @@
                         </button>
                         <div class="flex justify-center mb-6">
                             <div class="w-12 h-[1px] bg-primary/40 my-auto"></div>
-                            <i class="fas fa-crown text-primary mx-4 text-2xl gold-glow"></i>
+                            <i class="fas fa-sun text-primary mx-4 text-2xl gold-glow"></i>
                             <div class="w-12 h-[1px] bg-primary/40 my-auto"></div>
                         </div>
                         <div class="mb-8">
-                            <span class="font-display uppercase tracking-[0.4em] text-primary text-xs md:text-sm mb-3 block font-semibold">Grand Opening Celebration</span>
-                            <h2 class="font-display text-5xl md:text-6xl font-bold text-white uppercase tracking-tighter gold-gradient-text gold-glow mb-4">NOW OPEN</h2>
+                            <span class="font-display uppercase tracking-[0.4em] text-primary text-xs md:text-sm mb-3 block font-semibold">Sunday Special Offer</span>
+                            <h2 class="font-display text-5xl md:text-6xl font-bold text-white uppercase tracking-tighter gold-gradient-text gold-glow mb-4">10% OFF</h2>
                             <div class="h-[1px] w-24 bg-gradient-to-r from-transparent via-primary/50 to-transparent mx-auto"></div>
                         </div>
                         <div class="mb-10 transform hover:scale-105 transition-transform duration-500">
-                            <h3 class="text-4xl md:text-5xl font-bold text-white mb-1 tracking-tight">FLAT 20% OFF</h3>
+                            <h3 class="text-4xl md:text-5xl font-bold text-white mb-1 tracking-tight">FOR TODAY</h3>
                             <p class="text-primary font-bold tracking-[0.25em] text-xs md:text-sm uppercase">ON EVERY ORDER</p>
                             <div class="mt-6 flex flex-col items-center">
                                 <span class="text-primary/90 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] px-5 py-2 border border-primary/20 rounded-full bg-primary/5">
-                                    FOR THE FIRST WEEK ONLY
+                                    SUNDAY ONLY
                                 </span>
                             </div>
                         </div>
                         <p class="text-gray-300 font-body text-sm md:text-base leading-relaxed mb-10 opacity-90">
-                            Experience authentic Hyderabad flavors in McKinney, Texas. Celebrate our launch with 20% savings today.
+                            Enjoy authentic Hyderabad flavors in McKinney, Texas. Celebrate this Sunday with 10% savings on every order.
                         </p>
-                        <a href="#contact" id="popup-cta" class="inline-block w-full bg-primary hover:bg-primary-hover text-black font-bold py-5 px-10 rounded shadow-[0_10px_30px_rgba(200,164,93,0.3)] transition-all duration-300 transform hover:-translate-y-1.5 hover:shadow-[0_15px_40px_rgba(200,164,93,0.5)] text-sm md:text-base uppercase tracking-widest">
-                            Visit Us Today
+                        <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" target="_blank" rel="noopener noreferrer" id="popup-cta" class="inline-block w-full bg-primary hover:bg-primary-hover text-black font-bold py-5 px-10 rounded shadow-[0_10px_30px_rgba(200,164,93,0.3)] transition-all duration-300 transform hover:-translate-y-1.5 hover:shadow-[0_15px_40px_rgba(200,164,93,0.5)] text-sm md:text-base uppercase tracking-widest">
+                            Order Now
                         </a>
                     </div>
                 </div>`;
@@ -1576,15 +1577,11 @@
                     }, 700);
                 };
 
-                // Frequency Management: Show only once per session
-                if (!sessionStorage.getItem('grandOpeningPopupShown')) {
-                    setTimeout(showPopup, CONFIG.popupDelay);
-                    sessionStorage.setItem('grandOpeningPopupShown', 'true');
-                }
+                // Show popup on every page load (no session gating for Sunday special)
+                setTimeout(showPopup, CONFIG.popupDelay);
 
                 closeBtn.addEventListener('click', hidePopup);
                 overlay.addEventListener('click', hidePopup);
-                ctaBtn.addEventListener('click', hidePopup);
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape' && !popup.classList.contains('hidden')) hidePopup();
                 });
