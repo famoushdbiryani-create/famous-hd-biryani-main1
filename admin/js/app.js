@@ -3,7 +3,7 @@
 
 import { db, storage, auth } from './firebase-config.js';
 import { 
-    collection, addDoc, updateDoc, deleteDoc, doc, getDocs, getDoc, setDoc, query, orderBy, onSnapshot, where, serverTimestamp 
+    collection, addDoc, updateDoc, deleteDoc, doc, getDocs, getDoc, setDoc, query, orderBy, onSnapshot, where, serverTimestamp, limit, writeBatch
 } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 import { 
     ref, uploadBytes, getDownloadURL, deleteObject 
@@ -62,6 +62,9 @@ function initializeAdmin() {
     loadAboutContent();
     loadContactContent();
     loadSettings();
+    
+    // Check if database is empty to show Setup Assist card
+    checkDatabaseEmpty();
     
     if (window.hideLoading) window.hideLoading();
 }
@@ -405,7 +408,7 @@ function renderMenuList() {
                 </div>
             </div>
         </div>
-    `);
+    `).join('');
 }
 
 window.filterMenuCategory = function(category) {
@@ -1248,3 +1251,495 @@ function getIconString(iconKey) {
     };
     return iconMap[iconKey] || 'sun';
 }
+
+// ==========================================
+// 🛠️ DATABASE SEEDING & SETUP ASSIST
+// ==========================================
+async function checkDatabaseEmpty() {
+    try {
+        const menuSnap = await getDocs(query(collection(db, 'menu_items'), limit(1)));
+        const heroDoc = await getDoc(doc(db, 'site_content', 'home_hero'));
+        if (menuSnap.empty && !heroDoc.exists()) {
+            const seedCard = document.getElementById('seed-database-card');
+            if (seedCard) seedCard.classList.remove('hidden');
+        }
+    } catch (err) {
+        console.error("Error checking empty database state:", err);
+    }
+}
+
+window.seedDatabaseFromLiveSite = async function(isManual = false) {
+    if (isManual) {
+        const confirmSync = confirm("This will re-sync all data from the website pages to the admin panel. Any manual changes not synced back might be replaced. Do you want to continue?");
+        if (!confirmSync) return;
+    }
+    
+    const btn = document.getElementById('seed-db-btn');
+    const headerBtn = document.getElementById('header-sync-db-btn');
+    const settingsBtn = document.getElementById('settings-sync-db-btn');
+    const overviewSyncBtn = document.getElementById('btn-sync-live-data');
+    const seedCard = document.getElementById('seed-database-card');
+    
+    const disableButtons = () => {
+        if (window.showLoading) window.showLoading();
+        [btn, headerBtn, settingsBtn, overviewSyncBtn].forEach(b => {
+            if (b) {
+                b.disabled = true;
+                b.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Syncing...`;
+            }
+        });
+    };
+    
+    const enableButtons = () => {
+        if (window.hideLoading) window.hideLoading();
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fas fa-cloud-arrow-down"></i> Import Current Site Content`;
+        }
+        if (headerBtn) {
+            headerBtn.disabled = false;
+            headerBtn.innerHTML = `<i class="fas fa-sync-alt mr-1"></i> UPDATE WEBSITE TO ADMIN PANEL`;
+        }
+        if (settingsBtn) {
+            settingsBtn.disabled = false;
+            settingsBtn.innerHTML = `<i class="fas fa-sync-alt mr-2"></i> Update Website to Admin Panel`;
+        }
+        if (overviewSyncBtn) {
+            overviewSyncBtn.disabled = false;
+            overviewSyncBtn.innerHTML = `<i class="fas fa-sync-alt mr-2"></i> Update Website to Admin Panel`;
+        }
+    };
+    
+    disableButtons();
+    
+    try {
+        const parser = new DOMParser();
+        
+        // -------------------------------------------------------------
+        // PRE-CLEANUP: Clear existing menu_items and gallery_items
+        // to prevent duplicates and ensure clean state
+        // -------------------------------------------------------------
+        if (btn) btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Clearing old entries...`;
+        if (headerBtn) headerBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Clearing...`;
+        
+        const menuSnap = await getDocs(collection(db, 'menu_items'));
+        const gallerySnap = await getDocs(collection(db, 'gallery_items'));
+        
+        // Delete menu_items in batches of 400
+        let deleteBatch = writeBatch(db);
+        let opCount = 0;
+        
+        for (let docSnap of menuSnap.docs) {
+            deleteBatch.delete(docSnap.ref);
+            opCount++;
+            if (opCount >= 400) {
+                await deleteBatch.commit();
+                deleteBatch = writeBatch(db);
+                opCount = 0;
+            }
+        }
+        
+        for (let docSnap of gallerySnap.docs) {
+            deleteBatch.delete(docSnap.ref);
+            opCount++;
+            if (opCount >= 400) {
+                await deleteBatch.commit();
+                deleteBatch = writeBatch(db);
+                opCount = 0;
+            }
+        }
+        
+        if (opCount > 0) {
+            await deleteBatch.commit();
+        }
+        
+        // -------------------------------------------------------------
+        // 1. HOME PAGE & GENERAL SETTINGS (SEO, Footer, Socials)
+        // -------------------------------------------------------------
+        if (btn) btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Importing Home Page & SEO...`;
+        if (headerBtn) headerBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Home...`;
+        
+        const homeRes = await fetch('../index.html?t=' + Date.now());
+        if (!homeRes.ok) throw new Error("Could not fetch index.html");
+        const homeHtml = await homeRes.text();
+        const homeDoc = parser.parseFromString(homeHtml, 'text/html');
+        
+        // Hero
+        const heroSubtitle = homeDoc.querySelector('.hero-content span')?.textContent?.trim() || "Taste of Authenticity";
+        const heroTitle = homeDoc.querySelector('.hero-content h1')?.textContent?.trim()?.replace(/\s+/g, ' ') || "Authentic Hyderabadi Dum Biryani in McKinney, TX";
+        const heroDesc = homeDoc.querySelector('.hero-content p')?.textContent?.trim()?.replace(/\s+/g, ' ') || "Experience the royal legacy of the Nizams with our signature Hyderabadi Dum Biryani. Slow-cooked to perfection.";
+        
+        // Story
+        const storyTitle = homeDoc.querySelector('#story h2')?.textContent?.trim()?.replace(/\s+/g, ' ') || "Bringing Hyderabad to McKinney";
+        const storyParas = homeDoc.querySelectorAll('#story p');
+        const storyP1 = storyParas[0]?.textContent?.trim()?.replace(/\s+/g, ' ') || "At Famous HD Biryani, we believe that food is not just about taste, but an emotion. Our journey began with a simple desire: to serve the most authentic Hyderabadi cuisine that reminds you of home.";
+        const storyP2 = storyParas[1]?.textContent?.trim()?.replace(/\s+/g, ' ') || "Every grain of rice in our Biryani tells a story of tradition. We use the ancient 'Kacchi Gosht' technique where raw marinated meat is layered with half-cooked rice and slow-cooked in a sealed clay pot.";
+        
+        // Testimonials
+        const testimonialCards = homeDoc.querySelectorAll('.testimonial-card');
+        const testimonialsList = [];
+        testimonialCards.forEach(card => {
+            const inner = card.querySelector('.testimonial-card-inner') || card;
+            const text = inner.querySelector('p.italic')?.textContent?.trim()?.replace(/(^"|"$)/g, '') || inner.querySelector('p')?.textContent?.trim()?.replace(/(^"|"$)/g, '') || "";
+            const name = inner.querySelector('h4')?.textContent?.trim() || "Anonymous Customer";
+            const role = inner.querySelector('p.text-xs')?.textContent?.trim() || "Local Guide";
+            const initials = inner.querySelector('.w-10.h-10')?.textContent?.trim() || name.substring(0, 2).toUpperCase();
+            
+            // Count stars
+            const stars = inner.querySelectorAll('.fa-star').length || 5;
+            
+            if (text) {
+                testimonialsList.push({
+                    name,
+                    initials,
+                    rating: stars,
+                    text
+                });
+            }
+        });
+        
+        if (testimonialsList.length === 0) {
+            testimonialsList.push(
+                { name: "John D.", initials: "JD", rating: 5, text: "Hands down the best Biryani in Texas. The spice level was perfect and the meat was falling off the bone. Takes me back to Hyderabad!" },
+                { name: "Sarah M.", initials: "SM", rating: 5, text: "The service is outstanding and the Dum Pulav is out of this world. Highly recommend this culinary gem in McKinney." }
+            );
+        }
+        
+        // SEO & Meta
+        const seoTitle = homeDoc.querySelector('title')?.textContent?.trim() || "Famous HD Biryani - Authentic Hyderabadi Dum Biryani in McKinney, TX";
+        const seoDesc = homeDoc.querySelector('meta[name="description"]')?.getAttribute('content')?.trim() || "Taste the royal heritage of Hyderabad dum biryani in McKinney, TX. Crafted with organic ingredients and traditional spices.";
+        
+        // Socials & Footer
+        const footerDesc = homeDoc.querySelector('footer p')?.textContent?.trim() || "Taste the legacy of Hyderabadi dum biryani, crafted with passion and served with pride.";
+        const socialInsta = homeDoc.querySelector('a[href*="instagram.com"]')?.getAttribute('href') || "";
+        const socialFb = homeDoc.querySelector('a[href*="facebook.com"]')?.getAttribute('href') || "";
+        const socialYt = homeDoc.querySelector('a[href*="youtube.com"]')?.getAttribute('href') || "";
+        
+        // Write Homepage and SEO Docs
+        const homeHeroData = { subtitle: heroSubtitle, title: heroTitle, description: heroDesc };
+        const homeStoryData = { title: storyTitle, paragraph1: storyP1, paragraph2: storyP2 };
+        const homeTestimonialsData = { testimonials: testimonialsList };
+        const seoData = { title: seoTitle, description: seoDesc };
+        const footerData = { description: footerDesc };
+        const socialData = { instagram: socialInsta, facebook: socialFb, youtube: socialYt, threads: "" };
+        
+        await setDoc(doc(db, 'site_content', 'home_hero'), homeHeroData);
+        await setDoc(doc(db, 'site_content', 'home_story'), homeStoryData);
+        await setDoc(doc(db, 'site_content', 'home_testimonials'), homeTestimonialsData);
+        await setDoc(doc(db, 'site_content', 'seo_meta'), seoData);
+        await setDoc(doc(db, 'site_content', 'footer'), footerData);
+        await setDoc(doc(db, 'site_content', 'social_links'), socialData);
+        
+        // Mirror to preview
+        await setDoc(doc(db, 'preview_content', 'home_hero'), homeHeroData);
+        await setDoc(doc(db, 'preview_content', 'home_story'), homeStoryData);
+        await setDoc(doc(db, 'preview_content', 'home_testimonials'), homeTestimonialsData);
+        await setDoc(doc(db, 'preview_content', 'seo_meta'), seoData);
+        await setDoc(doc(db, 'preview_content', 'footer'), footerData);
+        await setDoc(doc(db, 'preview_content', 'social_links'), socialData);
+        
+        // -------------------------------------------------------------
+        // 2. ABOUT PAGE
+        // -------------------------------------------------------------
+        if (btn) btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Importing About Page...`;
+        if (headerBtn) headerBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> About...`;
+        
+        const aboutRes = await fetch('../about.html?t=' + Date.now());
+        let aboutTitle = "The Royal Story of Hyderabadi Dum Biryani";
+        let aboutSubtitle = "Born in the royal kitchens of Hyderabad, perfected through centuries of tradition, and now served in the heart of Texas.";
+        let aboutMission = "Hyderabadi Dum Biryani traces its roots to the royal kitchens of the Nizams of Hyderabad. Crafted with patience, aromatic spices, and slow dum cooking, this dish became a symbol of royal hospitality and culinary mastery. Each grain of rice absorbs the essence of carefully blended spices, creating a dish that is both fragrant and unforgettable. We honor this ancient tradition in every pot we prepare.";
+        
+        if (aboutRes.ok) {
+            const aboutHtml = await aboutRes.text();
+            const aboutDoc = parser.parseFromString(aboutHtml, 'text/html');
+            aboutTitle = aboutDoc.querySelector('#hero-section h1')?.textContent?.trim()?.replace(/\s+/g, ' ') || aboutTitle;
+            aboutSubtitle = aboutDoc.querySelector('#hero-section p')?.textContent?.trim()?.replace(/\s+/g, ' ') || aboutSubtitle;
+            
+            const leadParas = Array.from(aboutDoc.querySelectorAll('p.leading-loose')).map(p => p.textContent.trim().replace(/\s+/g, ' '));
+            if (leadParas.length > 0) {
+                aboutMission = leadParas.join('\n\n');
+            }
+        }
+        
+        const defaultTeam = [
+            { name: "Chef Khaleel", role: "Head Culinary Artist", bio: "Over 20 years of experience crafting authentic Nizami delicacies." },
+            { name: "Mirza Ahmed", role: "Master Sommelier & Spiceman", bio: "Curates our premium hand-ground spices and organic ingredients." }
+        ];
+        
+        const aboutHeroData = { title: aboutTitle, subtitle: aboutSubtitle };
+        const aboutMissionData = { content: aboutMission };
+        const aboutTeamData = { members: defaultTeam };
+        
+        await setDoc(doc(db, 'site_content', 'about_hero'), aboutHeroData);
+        await setDoc(doc(db, 'site_content', 'about_mission'), aboutMissionData);
+        await setDoc(doc(db, 'site_content', 'about_team'), aboutTeamData);
+        
+        await setDoc(doc(db, 'preview_content', 'about_hero'), aboutHeroData);
+        await setDoc(doc(db, 'preview_content', 'about_mission'), aboutMissionData);
+        await setDoc(doc(db, 'preview_content', 'about_team'), aboutTeamData);
+        
+        // -------------------------------------------------------------
+        // 3. CONTACT PAGE
+        // -------------------------------------------------------------
+        if (btn) btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Importing Contact...`;
+        if (headerBtn) headerBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Contact...`;
+        
+        const contactRes = await fetch('../contact.html?t=' + Date.now());
+        let street = "3300 Eldorado Pkwy, STE 100";
+        let city = "McKinney";
+        let state = "TX";
+        let zip = "75070";
+        let phone1 = "214-548-5462";
+        let phone2 = "214-548-5464";
+        let email = "famoushdbiryani@gmail.com";
+        let hours = "Tue - Sun: 11:00 AM - 10:00 PM\nMon: Closed";
+        let mapLink = "https://maps.google.com/?q=Famous+HD+Biryani+McKinney";
+        
+        if (contactRes.ok) {
+            const contactHtml = await contactRes.text();
+            const contactDoc = parser.parseFromString(contactHtml, 'text/html');
+            
+            const contactCards = contactDoc.querySelectorAll('.contact-card');
+            contactCards.forEach(card => {
+                const titleText = card.querySelector('h3')?.textContent?.trim() || "";
+                const contentText = card.querySelector('p')?.textContent?.trim() || "";
+                
+                if (titleText.includes("Location")) {
+                    const match = contentText.match(/([^,]+),\s*([^\s]+)\s*([A-Z]{2})\s*(\d{5})/);
+                    if (match) {
+                        street = match[1].trim();
+                        city = match[2].trim();
+                        state = match[3].trim();
+                        zip = match[4].trim();
+                    } else {
+                        const lines = contentText.split('\n').map(l => l.trim()).filter(Boolean);
+                        if (lines[0]) street = lines[0];
+                        if (lines[1]) {
+                            const cs = lines[1].split(',');
+                            if (cs[0]) city = cs[0].trim();
+                            if (cs[1]) {
+                                const parts = cs[1].trim().split(/\s+/);
+                                if (parts[0]) state = parts[0];
+                                if (parts[1]) zip = parts[1];
+                            }
+                        }
+                    }
+                    const dynamicMap = card.querySelector('a')?.getAttribute('href');
+                    if (dynamicMap) mapLink = dynamicMap;
+                } else if (titleText.includes("Call")) {
+                    const links = Array.from(card.querySelectorAll('a[href^="tel:"]')).map(a => a.textContent.trim());
+                    if (links[0]) phone1 = links[0];
+                    if (links[1]) phone2 = links[1];
+                } else if (titleText.includes("Email")) {
+                    const dynamicEmail = card.querySelector('a[href^="mailto:"]')?.textContent?.trim();
+                    if (dynamicEmail) email = dynamicEmail;
+                } else if (titleText.includes("Hours")) {
+                    hours = Array.from(card.querySelector('p').childNodes)
+                        .map(n => n.nodeType === Node.TEXT_NODE ? n.textContent.trim() : (n.nodeName === 'BR' ? '\n' : ''))
+                        .join('')
+                        .trim();
+                }
+            });
+        }
+        
+        const contactData = { street, city, state, zip, phone1, phone2, email, hours, mapLink };
+        await setDoc(doc(db, 'site_content', 'contact_info'), contactData);
+        await setDoc(doc(db, 'preview_content', 'contact_info'), contactData);
+        
+        // -------------------------------------------------------------
+        // 4. GALLERY PHOTOS (Batch Seeding)
+        // -------------------------------------------------------------
+        if (btn) btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Importing Gallery...`;
+        if (headerBtn) headerBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Gallery...`;
+        
+        const galleryRes = await fetch('../gallery.html?t=' + Date.now());
+        let galleryCount = 0;
+        
+        if (galleryRes.ok) {
+            const galleryHtml = await galleryRes.text();
+            const galleryDoc = parser.parseFromString(galleryHtml, 'text/html');
+            
+            let galleryBatch = writeBatch(db);
+            let gOpCount = 0;
+            
+            // Food & Atmosphere
+            const foodImages = galleryDoc.querySelectorAll('#food-atmosphere-grid img');
+            for (let img of foodImages) {
+                const imageUrl = img.getAttribute('src');
+                if (!imageUrl) continue;
+                
+                const alt = img.getAttribute('alt') || "Famous HD Biryani Food Atmosphere";
+                const caption = alt.replace(/\s*-\s*Food\s*&\s*Atmosphere/gi, '').trim();
+                
+                const newDocRef = doc(collection(db, 'gallery_items'));
+                galleryBatch.set(newDocRef, {
+                    imageUrl,
+                    caption,
+                    category: "Food & Atmosphere",
+                    visible: true,
+                    order: 0,
+                    createdAt: serverTimestamp()
+                });
+                
+                galleryCount++;
+                gOpCount++;
+                if (gOpCount >= 400) {
+                    await galleryBatch.commit();
+                    galleryBatch = writeBatch(db);
+                    gOpCount = 0;
+                }
+            }
+            
+            // Specials & Promotions
+            const promoImages = galleryDoc.querySelectorAll('#specials-promotional-grid img');
+            for (let img of promoImages) {
+                const imageUrl = img.getAttribute('src');
+                if (!imageUrl) continue;
+                
+                const alt = img.getAttribute('alt') || "Special Promotion Poster";
+                const caption = alt.trim();
+                
+                const newDocRef = doc(collection(db, 'gallery_items'));
+                galleryBatch.set(newDocRef, {
+                    imageUrl,
+                    caption,
+                    category: "Specials & Promotions",
+                    visible: true,
+                    order: 0,
+                    createdAt: serverTimestamp()
+                });
+                
+                galleryCount++;
+                gOpCount++;
+                if (gOpCount >= 400) {
+                    await galleryBatch.commit();
+                    galleryBatch = writeBatch(db);
+                    gOpCount = 0;
+                }
+            }
+            
+            if (gOpCount > 0) {
+                await galleryBatch.commit();
+            }
+        }
+        
+        // -------------------------------------------------------------
+        // 5. MENU MANAGEMENT (Batch Seeding)
+        // -------------------------------------------------------------
+        if (btn) btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Importing Menu Dishes...`;
+        if (headerBtn) headerBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Menu...`;
+        
+        const menuRes = await fetch('../menu.html?t=' + Date.now());
+        if (!menuRes.ok) throw new Error("Could not fetch menu.html");
+        const menuHtml = await menuRes.text();
+        const menuDoc = parser.parseFromString(menuHtml, 'text/html');
+        
+        const menuCards = menuDoc.querySelectorAll('.menu-item-card, [data-dish-id], .group[data-search]');
+        
+        const catMap = {
+            "Quick Bites": "Quick Bites",
+            "Veg Appetizers": "Veg Appetizers",
+            "Non-Veg Appetizers": "Non-Veg Appetizers",
+            "Specialty Biryanis": "Biryanis",
+            "Signature Biryanis": "Biryanis",
+            "Signature Pulavs": "Pulavs",
+            "Naan Breads": "Breads",
+            "Veg Curries": "Veg Curries",
+            "Non-Veg Curries": "Non-Veg Curries",
+            "Beverages": "Drinks",
+            "Indo-Chinese": "Indo-Chinese",
+            "Tandoori / Kebabs": "Tandoori",
+            "Tandoori": "Tandoori",
+            "Tiffin Specials": "Tiffins",
+            "Chaat / Street Snacks": "Chaat",
+            "Kids Menu": "Kids",
+            "Desserts": "Desserts"
+        };
+        
+        let menuCount = 0;
+        let menuBatch = writeBatch(db);
+        let mOpCount = 0;
+        const addedDishes = new Set();
+        
+        for (let card of menuCards) {
+            const name = card.querySelector('.dish-name')?.textContent?.trim() || card.querySelector('h3')?.textContent?.trim() || "";
+            if (!name || addedDishes.has(name)) continue;
+            addedDishes.add(name);
+            
+            const desc = card.querySelector('.dish-desc')?.textContent?.trim() || card.querySelector('p')?.textContent?.trim() || "";
+            const priceText = card.querySelector('.dish-price')?.textContent?.trim() || card.querySelector('span.text-primary')?.textContent?.trim() || "";
+            const price = priceText.replace(/[^0-9.]/g, '');
+            
+            const isVeg = card.getAttribute('data-veg') === 'true' || card.querySelector('.badge-sm')?.textContent?.includes('VEG') || false;
+            const dietary = isVeg ? 'veg' : 'non-veg';
+            
+            // Determine category
+            const categoryEl = card.closest('.menu-category');
+            let categoryText = "Quick Bites";
+            if (categoryEl) {
+                const headerText = categoryEl.querySelector('h2')?.textContent?.trim();
+                if (headerText && catMap[headerText]) {
+                    categoryText = catMap[headerText];
+                } else if (headerText) {
+                    categoryText = headerText;
+                }
+            }
+            
+            const imageUrl = card.querySelector('img')?.getAttribute('src') || "";
+            
+            // Check extra badges
+            let badge = "";
+            const badgesArea = card.querySelector('.flex.flex-wrap.items-center');
+            if (badgesArea) {
+                const spans = badgesArea.querySelectorAll('span');
+                spans.forEach(span => {
+                    const txt = span.textContent.trim();
+                    if (txt !== "VEG" && txt !== "NON-VEG" && !txt.includes("$")) {
+                        badge = txt;
+                    }
+                });
+            }
+            
+            const newDocRef = doc(collection(db, 'menu_items'));
+            menuBatch.set(newDocRef, {
+                name,
+                price,
+                category: categoryText,
+                dietary,
+                description: desc,
+                badge,
+                visible: true,
+                imageUrl,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            });
+            
+            menuCount++;
+            mOpCount++;
+            if (mOpCount >= 400) {
+                await menuBatch.commit();
+                menuBatch = writeBatch(db);
+                mOpCount = 0;
+            }
+        }
+        
+        if (mOpCount > 0) {
+            await menuBatch.commit();
+        }
+        
+        if (window.showToast) {
+            window.showToast(`Imported all ${menuCount} menu items, ${galleryCount} gallery images, and pages successfully!`, "success");
+        }
+        
+        if (seedCard) seedCard.classList.add('hidden');
+        
+        // Re-initialize state and refresh forms
+        initializeAdmin();
+        
+    } catch (err) {
+        console.error("Seeding operation failed:", err);
+        if (window.showToast) window.showToast(`Sync failed: ${err.message}`, "error");
+    } finally {
+        enableButtons();
+    }
+};
