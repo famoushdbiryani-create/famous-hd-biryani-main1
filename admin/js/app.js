@@ -592,6 +592,8 @@ if (menuItemForm) {
         const imageFile = document.getElementById('menu-image').files[0];
         
         try {
+            let imageUrl = '';
+            
             // Handle image uploads
             if (imageFile) {
                 try {
