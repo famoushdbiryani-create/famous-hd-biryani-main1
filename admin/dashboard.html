@@ -6,10 +6,9 @@
     <title>Dashboard | Famous HD Biryani Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -27,175 +26,671 @@
     <style>
         body { font-family: 'Poppins', sans-serif; }
         .sidebar-item.active {
-            background-color: rgba(200, 164, 93, 0.1);
-            border-right: 4px solid #C8A45D;
+            background-color: rgba(200, 164, 93, 0.08);
+            border-left: 4px solid #C8A45D;
             color: #C8A45D;
         }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #1a1a1a; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0a0a0a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #262626; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #333; }
+        .glass-panel { background: rgba(18, 18, 18, 0.85); backdrop-filter: blur(10px); }
+        .glow-gold { box-shadow: 0 0 15px rgba(200, 164, 93, 0.15); }
+        .glow-gold-intense { box-shadow: 0 0 25px rgba(200, 164, 93, 0.35); }
+        .badge-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .75; transform: scale(1.05); } }
     </style>
 </head>
-<body class="bg-[#0a0a0a] text-gray-200 overflow-hidden">
+<body class="bg-[#0a0a0a] text-gray-200 overflow-hidden font-body">
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black/90 z-[9999] flex flex-col items-center justify-center gap-4 transition-opacity duration-300">
+        <div class="relative w-20 h-20">
+            <div class="absolute inset-0 rounded-full border-4 border-primary/20"></div>
+            <div class="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+        </div>
+        <p class="text-primary font-display text-lg tracking-wider font-semibold animate-pulse">CONNECTING SECURELY...</p>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed bottom-6 right-6 z-[10000] flex items-center gap-3 bg-[#161616] border border-gray-800 px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 translate-y-20 opacity-0 max-w-md">
+        <div id="toast-icon-box" class="w-10 h-10 rounded-xl flex items-center justify-center">
+            <i id="toast-icon" class="fas"></i>
+        </div>
+        <div>
+            <h4 id="toast-title" class="text-white text-sm font-semibold">Success</h4>
+            <p id="toast-message" class="text-gray-400 text-xs mt-0.5">Content saved successfully.</p>
+        </div>
+    </div>
+
     <!-- Mobile Sidebar Overlay -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-[100] hidden lg:hidden" onclick="toggleSidebar()"></div>
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/75 z-[100] hidden lg:hidden" onclick="toggleSidebar()"></div>
 
     <div class="flex h-screen">
         <!-- SIDEBAR -->
-        <aside id="sidebar" class="fixed lg:relative w-64 h-full bg-[#121212] border-r border-gray-800 z-[101] transition-transform -translate-x-full lg:translate-x-0">
-            <div class="p-6 border-b border-gray-800 flex items-center justify-between">
-                <span class="font-display text-xl font-bold text-primary tracking-wider uppercase">FHD Admin</span>
-                <button class="lg:hidden text-gray-400" onclick="toggleSidebar()">
+        <aside id="sidebar" class="fixed lg:relative w-72 h-full bg-[#121212] border-r border-gray-900 z-[101] transition-transform duration-300 -translate-x-full lg:translate-x-0 flex flex-col">
+            <!-- Brand -->
+            <div class="p-6 border-b border-gray-900 flex items-center justify-between">
+                <div class="flex flex-col">
+                    <span class="font-display text-xl font-bold text-primary tracking-wider uppercase">FHD Admin</span>
+                    <span class="text-[9px] text-gray-500 tracking-widest uppercase mt-0.5">Famous HD Biryani</span>
+                </div>
+                <button class="lg:hidden text-gray-400 hover:text-white" onclick="toggleSidebar()">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
 
-            <nav class="mt-6 px-4 space-y-2 overflow-y-auto custom-scrollbar h-[calc(100%-80px)]">
-                <div class="text-xs font-semibold text-gray-500 uppercase tracking-widest px-2 mb-2">Main Menu</div>
+            <!-- Sidebar Nav -->
+            <nav class="flex-1 mt-6 px-4 space-y-1.5 overflow-y-auto custom-scrollbar">
+                <div class="text-[10px] font-bold text-gray-600 uppercase tracking-widest px-3 mb-2">Main Dashboard</div>
                 
-                <button onclick="switchSection('overview')" class="sidebar-item active flex items-center gap-3 w-full px-4 py-3 rounded-xl transition text-left">
-                    <i class="fas fa-chart-line w-5"></i>
+                <button onclick="switchSection('overview')" id="nav-overview" class="sidebar-item active flex items-center gap-3 w-full px-4 py-3 rounded-xl transition text-left text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-chart-line w-5 text-center text-base"></i>
                     <span>Overview</span>
                 </button>
 
-                <button onclick="switchSection('menu')" class="sidebar-item flex items-center gap-3 w-full px-4 py-3 rounded-xl transition text-left">
-                    <i class="fas fa-utensils w-5"></i>
+                <!-- 🔥 Offers & Promotions (Glow Highlighted) -->
+                <button onclick="switchSection('offers')" id="nav-offers" class="sidebar-item border border-primary/20 bg-primary/5 flex items-center justify-between w-full px-4 py-3 rounded-xl transition text-left text-sm font-semibold text-primary glow-gold">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-tags w-5 text-center text-base"></i>
+                        <span>Offers & Promo</span>
+                    </div>
+                    <span class="badge-pulse bg-primary text-[#121212] text-[9px] font-bold px-2 py-0.5 rounded-full">HOT</span>
+                </button>
+
+                <div class="pt-6 text-[10px] font-bold text-gray-600 uppercase tracking-widest px-3 mb-2">Page Editors</div>
+
+                <button onclick="switchSection('home')" id="nav-home" class="sidebar-item flex items-center gap-3 w-full px-4 py-3 rounded-xl transition text-left text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-home w-5 text-center text-base"></i>
+                    <span>Home Page</span>
+                </button>
+
+                <button onclick="switchSection('menu')" id="nav-menu" class="sidebar-item flex items-center gap-3 w-full px-4 py-3 rounded-xl transition text-left text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-utensils w-5 text-center text-base"></i>
                     <span>Menu Management</span>
                 </button>
 
-                <button onclick="switchSection('gallery')" class="sidebar-item flex items-center gap-3 w-full px-4 py-3 rounded-xl transition text-left">
-                    <i class="fas fa-images w-5"></i>
+                <button onclick="switchSection('about')" id="nav-about" class="sidebar-item flex items-center gap-3 w-full px-4 py-3 rounded-xl transition text-left text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-book-open w-5 text-center text-base"></i>
+                    <span>About Page</span>
+                </button>
+
+                <button onclick="switchSection('gallery')" id="nav-gallery" class="sidebar-item flex items-center gap-3 w-full px-4 py-3 rounded-xl transition text-left text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-images w-5 text-center text-base"></i>
                     <span>Gallery Photos</span>
                 </button>
 
-                <button onclick="switchSection('content')" class="sidebar-item flex items-center gap-3 w-full px-4 py-3 rounded-xl transition text-left">
-                    <i class="fas fa-edit w-5"></i>
-                    <span>Site Content</span>
+                <button onclick="switchSection('contact')" id="nav-contact" class="sidebar-item flex items-center gap-3 w-full px-4 py-3 rounded-xl transition text-left text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-phone-alt w-5 text-center text-base"></i>
+                    <span>Contact Info</span>
                 </button>
 
-                <div class="pt-6 text-xs font-semibold text-gray-500 uppercase tracking-widest px-2 mb-2">Security</div>
-                
-                <button onclick="logout()" class="sidebar-item flex items-center gap-3 w-full px-4 py-3 rounded-xl transition text-left text-red-400 hover:bg-red-500/10">
-                    <i class="fas fa-sign-out-alt w-5"></i>
-                    <span>Logout</span>
+                <div class="pt-6 text-[10px] font-bold text-gray-600 uppercase tracking-widest px-3 mb-2">Global Settings</div>
+
+                <button onclick="switchSection('settings')" id="nav-settings" class="sidebar-item flex items-center gap-3 w-full px-4 py-3 rounded-xl transition text-left text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-cog w-5 text-center text-base"></i>
+                    <span>Site Settings</span>
                 </button>
             </nav>
-        </aside>
 
-        <!-- MAIN CONTENT AREA -->
-        <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
-            <!-- Header -->
-            <header class="h-16 bg-[#121212] border-b border-gray-800 flex items-center justify-between px-6">
-                <div class="flex items-center gap-4">
-                    <button class="lg:hidden text-gray-400" onclick="toggleSidebar()">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
-                    <h2 id="section-title" class="text-lg font-semibold text-white uppercase tracking-wider">Overview</h2>
-                </div>
-                <div class="flex items-center gap-4">
-                    <div class="hidden md:block text-right">
-                        <p class="text-sm font-medium text-white" id="user-email">Admin</p>
-                        <p class="text-[10px] text-gray-500 uppercase tracking-tighter">Owner Access</p>
-                    </div>
-                    <div class="w-10 h-10 rounded-full bg-primary/20 border border-primary/50 flex items-center justify-center text-primary">
+            <!-- User Info / Logout -->
+            <div class="p-4 border-t border-gray-900 bg-[#0d0d0d] flex flex-col gap-3">
+                <div class="flex items-center gap-3 px-2">
+                    <div class="w-9 h-9 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-primary text-sm font-semibold">
                         <i class="fas fa-user-shield"></i>
                     </div>
+                    <div class="flex-1 min-w-0">
+                        <p id="user-email-sidebar" class="text-xs font-semibold text-white truncate">admin@famoushdbiryani.com</p>
+                        <p class="text-[9px] text-gray-500 uppercase tracking-wider font-semibold">Administrator</p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="flex items-center justify-center gap-2 w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 py-2.5 rounded-xl text-xs font-bold transition">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>LOGOUT CONTROL</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN WINDOW -->
+        <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <!-- Header -->
+            <header class="h-20 bg-[#121212] border-b border-gray-900 flex items-center justify-between px-6 z-10">
+                <div class="flex items-center gap-4">
+                    <button class="lg:hidden text-gray-400 hover:text-white" onclick="toggleSidebar()">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <div id="section-badge" class="w-1.5 h-6 bg-primary rounded-full"></div>
+                        <h2 id="section-title" class="text-lg font-bold text-white uppercase tracking-wider font-display">Overview</h2>
+                    </div>
+                </div>
+                
+                <!-- Staging Indicator / Quick Publish -->
+                <div class="flex items-center gap-3">
+                    <span class="hidden md:inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/30 text-green-400 px-3 py-1.5 rounded-full text-xs font-medium">
+                        <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-ping"></span>
+                        <span>Database Live</span>
+                    </span>
+                    <button onclick="saveAndPreview('index.html')" class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2">
+                        <i class="fas fa-eye"></i>
+                        <span>PREVIEW SITE</span>
+                    </button>
                 </div>
             </header>
 
-            <!-- Scrollable Sections -->
-            <div class="flex-1 overflow-y-auto p-6 custom-scrollbar bg-[#0a0a0a]">
+            <!-- Scrollable Content Frame -->
+            <div class="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar bg-[#0a0a0a] space-y-8">
                 
                 <!-- SECTION: OVERVIEW -->
-                <section id="section-overview" class="section-content space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="p-6 bg-[#121212] rounded-2xl border border-gray-800 shadow-xl">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                                    <i class="fas fa-bowl-food text-xl"></i>
-                                </div>
-                                <span class="text-xs text-gray-500 font-semibold tracking-widest uppercase">Items</span>
+                <section id="section-overview" class="section-content space-y-8">
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="p-6 bg-[#121212] rounded-2xl border border-gray-900 flex items-center gap-4 shadow-xl">
+                            <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                                <i class="fas fa-bowl-food text-xl"></i>
                             </div>
-                            <h3 class="text-3xl font-bold text-white mb-1" id="stat-menu-count">--</h3>
-                            <p class="text-xs text-gray-500">Total Menu Items</p>
+                            <div>
+                                <h3 class="text-2xl font-bold text-white mb-0.5" id="stat-menu-count">--</h3>
+                                <p class="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Menu Dishes</p>
+                            </div>
                         </div>
-                        <div class="p-6 bg-[#121212] rounded-2xl border border-gray-800 shadow-xl">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
-                                    <i class="fas fa-camera-retro text-xl"></i>
-                                </div>
-                                <span class="text-xs text-gray-500 font-semibold tracking-widest uppercase">Photos</span>
+
+                        <div class="p-6 bg-[#121212] rounded-2xl border border-gray-900 flex items-center gap-4 shadow-xl">
+                            <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                                <i class="fas fa-camera text-xl"></i>
                             </div>
-                            <h3 class="text-3xl font-bold text-white mb-1" id="stat-gallery-count">--</h3>
-                            <p class="text-xs text-gray-500">Gallery Moments</p>
+                            <div>
+                                <h3 class="text-2xl font-bold text-white mb-0.5" id="stat-gallery-count">--</h3>
+                                <p class="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Gallery Photos</p>
+                            </div>
                         </div>
-                        <div class="p-6 bg-[#121212] rounded-2xl border border-gray-800 shadow-xl">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
-                                    <i class="fas fa-shield-check text-xl"></i>
-                                </div>
-                                <span class="text-xs text-gray-500 font-semibold tracking-widest uppercase">Security</span>
+
+                        <div class="p-6 bg-[#121212] rounded-2xl border border-gray-900 flex items-center gap-4 shadow-xl">
+                            <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
+                                <i class="fas fa-tags text-xl"></i>
                             </div>
-                            <h3 class="text-3xl font-bold text-white mb-1">Active</h3>
-                            <p class="text-xs text-gray-500">Firebase Shield Enabled</p>
+                            <div>
+                                <h3 class="text-2xl font-bold text-white mb-0.5" id="stat-offers-count">--</h3>
+                                <p class="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Active Offers</p>
+                            </div>
+                        </div>
+
+                        <div class="p-6 bg-[#121212] rounded-2xl border border-gray-900 flex items-center gap-4 shadow-xl">
+                            <div class="w-12 h-12 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400">
+                                <i class="fas fa-clock text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-white mb-0.5" id="stat-current-time">02:00 AM</h3>
+                                <p class="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Local Time</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="p-8 bg-primary/5 rounded-3xl border border-primary/20">
-                        <h3 class="text-xl font-display font-bold text-primary mb-4">Welcome to the Command Center</h3>
-                        <p class="text-gray-400 leading-relaxed mb-6">
-                            From here, you can control the entire Famous HD Biryani website experience. Add new seasonal specials, update prices instantly, or share new "Moments" in the gallery. All changes are reflected on the website in real-time.
-                        </p>
-                        <div class="flex gap-4">
-                            <button onclick="switchSection('menu')" class="bg-primary text-white px-6 py-2 rounded-xl font-semibold text-sm hover:bg-primary-hover transition shadow-lg">Manage Menu</button>
-                            <button onclick="switchSection('gallery')" class="border border-gray-700 text-gray-300 px-6 py-2 rounded-xl font-semibold text-sm hover:bg-gray-800 transition">Update Gallery</button>
+                    <!-- Promo Card -->
+                    <div class="p-8 bg-primary/5 rounded-3xl border border-primary/20 relative overflow-hidden flex flex-col md:flex-row gap-6 items-center">
+                        <div class="absolute right-0 top-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10"></div>
+                        <div class="flex-1 text-center md:text-left">
+                            <h3 class="text-2xl font-display font-bold text-primary mb-2">Website Real-Time Management Panel</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed max-w-2xl">
+                                Welcome, Administrator! You have full, seamless control over all website aspects. Add food items, organize the beautiful image gallery, update restaurant operational hours, or launch and schedule high-converting offers with automatic expiry timers.
+                            </p>
                         </div>
+                        <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto shrink-0">
+                            <button onclick="switchSection('offers')" class="bg-primary hover:bg-primary-hover text-[#121212] px-6 py-3 rounded-xl font-bold text-sm transition shadow-lg shadow-primary/10">Manage Offers</button>
+                            <button onclick="switchSection('menu')" class="border border-gray-800 text-gray-300 hover:bg-white/5 px-6 py-3 rounded-xl font-semibold text-sm transition">Manage Menu</button>
+                        </div>
+                    </div>
+
+                    <!-- System Configuration Alert -->
+                    <div id="firebase-warning-card" class="hidden p-6 bg-red-500/10 border border-red-500/20 rounded-2xl flex gap-4 items-start">
+                        <div class="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center text-red-500 shrink-0">
+                            <i class="fas fa-exclamation-triangle text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white text-sm font-semibold">Firebase Credentials Placeholder Detected</h4>
+                            <p class="text-gray-400 text-xs mt-1 leading-relaxed">
+                                The file <code class="text-red-400 bg-black/40 px-1.5 py-0.5 rounded">admin/js/firebase-config.js</code> has placeholder keys. You need to replace them with your actual Firebase project settings for the database to synchronize and load data correctly.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION: OFFERS & PROMOTIONS -->
+                <section id="section-offers" class="section-content hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-900 pb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-white font-display">Special Offers & Timed Announcements</h3>
+                            <p class="text-xs text-gray-500 mt-1">Configure scrolling marquee lines, popup modals, and schedule automatically expiring offers.</p>
+                        </div>
+                        <button onclick="openOfferModal()" class="bg-primary hover:bg-primary-hover text-[#121212] px-6 py-3 rounded-xl font-bold text-sm shadow-xl flex items-center justify-center gap-2 self-start sm:self-auto">
+                            <i class="fas fa-plus"></i>
+                            <span>CREATE NEW OFFER</span>
+                        </button>
+                    </div>
+
+                    <!-- Active Offers List Grid -->
+                    <div id="active-offers-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Loaded Dynamically -->
+                        <div class="animate-pulse bg-gray-900/50 border border-gray-900 h-44 rounded-2xl"></div>
+                        <div class="animate-pulse bg-gray-900/50 border border-gray-900 h-44 rounded-2xl"></div>
+                    </div>
+                </section>
+
+                <!-- SECTION: HOME PAGE EDITOR -->
+                <section id="section-home" class="section-content hidden space-y-8">
+                    <!-- Hero Section Editor -->
+                    <div class="bg-[#121212] rounded-3xl border border-gray-900 overflow-hidden shadow-xl">
+                        <div class="p-6 border-b border-gray-900 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-sm tracking-wider uppercase font-display">Hero Showcase Editor</h4>
+                        </div>
+                        <div class="p-8 space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Tagline / Subtitle</label>
+                                    <input type="text" id="home-hero-subtitle" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. AUTHENTIC DUM BIRYANI SINCE 2018">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Main Header Title</label>
+                                    <input type="text" id="home-hero-title" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. Traditional Flavors Crafted with Love">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Hero Intro Paragraph</label>
+                                <textarea id="home-hero-description" rows="3" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="Describe what makes your restaurant unique..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Story / Chef Section -->
+                    <div class="bg-[#121212] rounded-3xl border border-gray-900 overflow-hidden shadow-xl">
+                        <div class="p-6 border-b border-gray-900 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-sm tracking-wider uppercase font-display">Our Story & Heritage</h4>
+                        </div>
+                        <div class="p-8 space-y-6">
+                            <div>
+                                <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Story Section Header</label>
+                                <input type="text" id="home-story-title" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. A Culinary Journey of Spices">
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Paragraph 1</label>
+                                    <textarea id="home-story-p1" rows="5" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="First paragraph of history/story..."></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Paragraph 2</label>
+                                    <textarea id="home-story-p2" rows="5" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="Second paragraph of history/story..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonials Editor -->
+                    <div class="bg-[#121212] rounded-3xl border border-gray-900 overflow-hidden shadow-xl">
+                        <div class="p-6 border-b border-gray-900 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h4 class="text-white font-bold text-sm tracking-wider uppercase font-display">Customer Reviews / Testimonials</h4>
+                            </div>
+                            <button onclick="addTestimonial()" class="bg-primary/20 hover:bg-primary/30 border border-primary/30 text-primary px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2">
+                                <i class="fas fa-plus"></i>
+                                <span>ADD TESTIMONIAL</span>
+                            </button>
+                        </div>
+                        <div class="p-8">
+                            <div id="testimonials-list" class="space-y-6">
+                                <!-- Testimonial rows added here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floating Action Buttons for Form Section -->
+                    <div class="flex items-center justify-end gap-3 pt-4">
+                        <button onclick="saveAndPreview('index.html')" class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-xl text-sm font-bold transition">PREVIEW DRAFT</button>
+                        <button onclick="saveHomeContent()" class="bg-primary hover:bg-primary-hover text-[#121212] px-8 py-3 rounded-xl text-sm font-bold transition shadow-lg shadow-primary/15">PUBLISH CHANGES</button>
                     </div>
                 </section>
 
                 <!-- SECTION: MENU MANAGEMENT -->
                 <section id="section-menu" class="section-content hidden space-y-6">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-xl font-bold text-white">Menu Items</h3>
-                        <button onclick="openModal('menu')" class="bg-primary hover:bg-primary-hover text-white px-6 py-2 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-900 pb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-white font-display">Menu Catalog Manager</h3>
+                            <p class="text-xs text-gray-500 mt-1">Configure categories, details, badges, prices, and visual styling for every dish on the menu.</p>
+                        </div>
+                        <button onclick="openMenuModal()" class="bg-primary hover:bg-primary-hover text-[#121212] px-6 py-3 rounded-xl font-bold text-sm shadow-xl flex items-center justify-center gap-2 self-start sm:self-auto">
                             <i class="fas fa-plus"></i>
-                            <span>ADD NEW ITEM</span>
+                            <span>ADD DISH ITEM</span>
                         </button>
                     </div>
 
-                    <!-- Category Filters -->
-                    <div class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
-                        <button class="bg-primary text-white px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap">ALL</button>
-                        <button class="bg-gray-800 text-gray-400 px-4 py-2 rounded-lg text-xs font-bold hover:text-white transition whitespace-nowrap">BIRYANIS</button>
-                        <button class="bg-gray-800 text-gray-400 px-4 py-2 rounded-lg text-xs font-bold hover:text-white transition whitespace-nowrap">PULAVS</button>
-                        <button class="bg-gray-800 text-gray-400 px-4 py-2 rounded-lg text-xs font-bold hover:text-white transition whitespace-nowrap">APPETIZERS</button>
-                        <button class="bg-gray-800 text-gray-400 px-4 py-2 rounded-lg text-xs font-bold hover:text-white transition whitespace-nowrap">CURRIES</button>
+                    <!-- Catalog Filtering & Searching Tools -->
+                    <div class="flex flex-col md:flex-row md:items-center gap-4 bg-[#121212] p-4 rounded-2xl border border-gray-900 shadow-xl">
+                        <!-- Search Box -->
+                        <div class="relative flex-1">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" id="menu-search" oninput="filterMenuSearch()" class="w-full bg-gray-900/50 border border-gray-800 text-white pl-11 pr-4 py-3 rounded-xl outline-none focus:border-primary transition text-sm" placeholder="Search dishes by name or description...">
+                        </div>
+                        
+                        <!-- Category Selector Dropdown (Faster than inline bar with 15 categories) -->
+                        <div class="flex items-center gap-3 shrink-0">
+                            <span class="text-xs text-gray-500 uppercase tracking-widest font-bold hidden sm:inline">Category:</span>
+                            <select id="menu-filter-select" onchange="filterMenuCategory(this.value)" class="bg-gray-900 border border-gray-800 text-white px-4 py-3 rounded-xl text-sm font-semibold outline-none focus:border-primary transition cursor-pointer">
+                                <option value="ALL">ALL CATEGORIES</option>
+                                <option value="Quick Bites">Quick Bites</option>
+                                <option value="Veg Appetizers">Veg Appetizers</option>
+                                <option value="Non-Veg Appetizers">Non-Veg Appetizers</option>
+                                <option value="Veg Curries">Veg Curries</option>
+                                <option value="Non-Veg Curries">Non-Veg Curries</option>
+                                <option value="Breads">Breads</option>
+                                <option value="Indo-Chinese">Indo-Chinese</option>
+                                <option value="Tandoori">Tandoori / Kebabs</option>
+                                <option value="Biryanis">Regular Biryanis</option>
+                                <option value="Pulavs">Pulavs</option>
+                                <option value="Tiffins">Tiffins</option>
+                                <option value="Chaat">Chaat / Street Snacks</option>
+                                <option value="Kids">Kids Menu</option>
+                                <option value="Desserts">Desserts</option>
+                                <option value="Drinks">Beverages</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div id="menu-items-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Items will be loaded here dynamically -->
-                        <div class="animate-pulse bg-gray-900 h-64 rounded-2xl"></div>
-                        <div class="animate-pulse bg-gray-900 h-64 rounded-2xl"></div>
-                        <div class="animate-pulse bg-gray-900 h-64 rounded-2xl"></div>
+                    <!-- Items Grid -->
+                    <div id="menu-items-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Loaded dynamically -->
+                        <div class="animate-pulse bg-gray-900/50 border border-gray-900 h-72 rounded-3xl"></div>
+                        <div class="animate-pulse bg-gray-900/50 border border-gray-900 h-72 rounded-3xl"></div>
+                        <div class="animate-pulse bg-gray-900/50 border border-gray-900 h-72 rounded-3xl"></div>
                     </div>
                 </section>
 
-                <!-- SECTION: GALLERY MANAGEMENT -->
-                <section id="section-gallery" class="section-content hidden space-y-6">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-xl font-bold text-white">Gallery Moments</h3>
-                        <button onclick="openModal('gallery')" class="bg-primary hover:bg-primary-hover text-white px-6 py-2 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2">
-                            <i class="fas fa-upload"></i>
-                            <span>UPLOAD PHOTO</span>
-                        </button>
+                <!-- SECTION: ABOUT PAGE EDITOR -->
+                <section id="section-about" class="section-content hidden space-y-8">
+                    <!-- About Hero Section -->
+                    <div class="bg-[#121212] rounded-3xl border border-gray-900 overflow-hidden shadow-xl">
+                        <div class="p-6 border-b border-gray-900 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                <i class="fas fa-heading"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-sm tracking-wider uppercase font-display">About Page Header</h4>
+                        </div>
+                        <div class="p-8 space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Main Header</label>
+                                    <input type="text" id="about-hero-title" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. About Our Restaurant">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Subtitle / Slogan</label>
+                                    <input type="text" id="about-hero-subtitle" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. Preserving Traditional Culinary Legacy">
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div id="gallery-items-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <!-- Photos will be loaded here dynamically -->
-                        <div class="animate-pulse bg-gray-900 aspect-square rounded-xl"></div>
-                        <div class="animate-pulse bg-gray-900 aspect-square rounded-xl"></div>
-                        <div class="animate-pulse bg-gray-900 aspect-square rounded-xl"></div>
-                        <div class="animate-pulse bg-gray-900 aspect-square rounded-xl"></div>
+                    <!-- Mission Statement -->
+                    <div class="bg-[#121212] rounded-3xl border border-gray-900 overflow-hidden shadow-xl">
+                        <div class="p-6 border-b border-gray-900 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                <i class="fas fa-hand-holding-heart"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-sm tracking-wider uppercase font-display">Our Mission & Heritage Values</h4>
+                        </div>
+                        <div class="p-8 space-y-6">
+                            <div>
+                                <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Detailed Core Story / Mission</label>
+                                <textarea id="about-mission-content" rows="6" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="Explain the heritage, spice composition process, and food quality standard values..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Team Management Card -->
+                    <div class="bg-[#121212] rounded-3xl border border-gray-900 overflow-hidden shadow-xl">
+                        <div class="p-6 border-b border-gray-900 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                    <i class="fas fa-users-cog"></i>
+                                </div>
+                                <h4 class="text-white font-bold text-sm tracking-wider uppercase font-display">Culinary Masters / Management Team</h4>
+                            </div>
+                            <button onclick="addTeamMember()" class="bg-primary/20 hover:bg-primary/30 border border-primary/30 text-primary px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2">
+                                <i class="fas fa-plus"></i>
+                                <span>ADD TEAM MEMBER</span>
+                            </button>
+                        </div>
+                        <div class="p-8">
+                            <div id="team-members-list" class="space-y-6">
+                                <!-- Dynamic team member rows -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex items-center justify-end gap-3 pt-4">
+                        <button onclick="saveAndPreview('about.html')" class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-xl text-sm font-bold transition">PREVIEW DRAFT</button>
+                        <button onclick="saveAboutContent()" class="bg-primary hover:bg-primary-hover text-[#121212] px-8 py-3 rounded-xl text-sm font-bold transition shadow-lg shadow-primary/15">PUBLISH CHANGES</button>
+                    </div>
+                </section>
+
+                <!-- SECTION: GALLERY PHOTOS -->
+                <section id="section-gallery" class="section-content hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-900 pb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-white font-display">Media Gallery Manager</h3>
+                            <p class="text-xs text-gray-500 mt-1">Upload premium food photographs, atmosphere shots, and special visual assets to show off to visitors.</p>
+                        </div>
+                        <div class="flex items-center gap-3 self-start sm:self-auto">
+                            <!-- Hidden Image File Input -->
+                            <input type="file" id="gallery-image-input" accept="image/*" class="hidden" onchange="uploadGalleryFiles(this.files)">
+                            <button onclick="document.getElementById('gallery-image-input').click()" class="bg-primary hover:bg-primary-hover text-[#121212] px-6 py-3 rounded-xl font-bold text-sm shadow-xl flex items-center gap-2">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>UPLOAD NEW PHOTOS</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dropzone Area -->
+                    <div id="gallery-dropzone" class="border-2 border-dashed border-gray-800 hover:border-primary/50 bg-[#121212]/50 p-8 rounded-3xl text-center cursor-pointer transition flex flex-col items-center justify-center gap-3">
+                        <div class="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary text-xl">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white text-sm font-semibold">Drag & Drop visual food photos here</h4>
+                            <p class="text-gray-500 text-xs mt-1">Accepts PNG, JPG, JPEG, and WebP up to 10MB each</p>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Filters -->
+                    <div class="flex items-center gap-3 bg-[#121212] p-4 rounded-2xl border border-gray-900 shadow-xl">
+                        <span class="text-xs text-gray-500 font-bold uppercase tracking-wider pl-2">Filter Category:</span>
+                        <div class="flex gap-2 overflow-x-auto custom-scrollbar flex-1 pb-1">
+                            <button onclick="filterGalleryCategory('ALL')" id="gallery-filter-all" class="bg-primary text-[#121212] px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap">ALL</button>
+                            <button onclick="filterGalleryCategory('Food & Atmosphere')" id="gallery-filter-food" class="bg-gray-900 border border-gray-800 text-gray-400 px-4 py-1.5 rounded-lg text-xs font-semibold hover:text-white transition whitespace-nowrap">Food & Atmosphere</button>
+                            <button onclick="filterGalleryCategory('Specials & Promotions')" id="gallery-filter-promo" class="bg-gray-900 border border-gray-800 text-gray-400 px-4 py-1.5 rounded-lg text-xs font-semibold hover:text-white transition whitespace-nowrap">Specials & Promotions</button>
+                        </div>
+                    </div>
+
+                    <!-- Grid -->
+                    <div id="gallery-items-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Loaded Dynamically -->
+                        <div class="animate-pulse bg-gray-900/50 border border-gray-900 aspect-square rounded-2xl"></div>
+                        <div class="animate-pulse bg-gray-900/50 border border-gray-900 aspect-square rounded-2xl"></div>
+                        <div class="animate-pulse bg-gray-900/50 border border-gray-900 aspect-square rounded-2xl"></div>
+                        <div class="animate-pulse bg-gray-900/50 border border-gray-900 aspect-square rounded-2xl"></div>
+                    </div>
+                </section>
+
+                <!-- SECTION: CONTACT INFO -->
+                <section id="section-contact" class="section-content hidden space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Location & Map -->
+                        <div class="bg-[#121212] rounded-3xl border border-gray-900 overflow-hidden shadow-xl">
+                            <div class="p-6 border-b border-gray-900 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                </div>
+                                <h4 class="text-white font-bold text-sm tracking-wider uppercase font-display">Store Location Details</h4>
+                            </div>
+                            <div class="p-8 space-y-6">
+                                <div>
+                                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Street Address</label>
+                                    <input type="text" id="contact-street" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. 3300 Eldorado Pkwy, STE 100">
+                                </div>
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div class="col-span-1">
+                                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">City</label>
+                                        <input type="text" id="contact-city" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="McKinney">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">State</label>
+                                        <input type="text" id="contact-state" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="TX">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Zip Code</label>
+                                        <input type="text" id="contact-zip" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="75070">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Google Maps Integration Link</label>
+                                    <input type="text" id="contact-map-link" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition text-xs" placeholder="Google maps sharing URL...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Communications & Opening Hours -->
+                        <div class="bg-[#121212] rounded-3xl border border-gray-900 overflow-hidden shadow-xl">
+                            <div class="p-6 border-b border-gray-900 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                <h4 class="text-white font-bold text-sm tracking-wider uppercase font-display">Communication & Timing</h4>
+                            </div>
+                            <div class="p-8 space-y-6">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Main Phone</label>
+                                        <input type="text" id="contact-phone1" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. 214-548-5462">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Secondary Phone</label>
+                                        <input type="text" id="contact-phone2" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. 214-548-5464">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Public Contact Email</label>
+                                    <input type="email" id="contact-email" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. famoushdbiryani@gmail.com">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Opening Hours Text</label>
+                                    <textarea id="contact-hours" rows="3" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. Tue - Sun: 11:00 AM - 10:00 PM&#10;Mon: Closed"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex items-center justify-end gap-3">
+                        <button onclick="saveAndPreview('contact.html')" class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-xl text-sm font-bold transition">PREVIEW DRAFT</button>
+                        <button onclick="saveContactContent()" class="bg-primary hover:bg-primary-hover text-[#121212] px-8 py-3 rounded-xl text-sm font-bold transition shadow-lg shadow-primary/15">PUBLISH CHANGES</button>
+                    </div>
+                </section>
+
+                <!-- SECTION: GLOBAL SITE SETTINGS -->
+                <section id="section-settings" class="section-content hidden space-y-8">
+                    <!-- Footer Info -->
+                    <div class="bg-[#121212] rounded-3xl border border-gray-900 overflow-hidden shadow-xl">
+                        <div class="p-6 border-b border-gray-900 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                <i class="fas fa-align-left"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-sm tracking-wider uppercase font-display">Footer Branding Text</h4>
+                        </div>
+                        <div class="p-8">
+                            <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Short Footer Description</label>
+                            <textarea id="settings-footer-desc" rows="3" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="A short restaurant description displayed at the bottom of all pages..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Social Handles -->
+                    <div class="bg-[#121212] rounded-3xl border border-gray-900 overflow-hidden shadow-xl">
+                        <div class="p-6 border-b border-gray-900 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                <i class="fas fa-share-alt"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-sm tracking-wider uppercase font-display">Social Media Integration Links</h4>
+                        </div>
+                        <div class="p-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Instagram URL</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-pink-500 text-lg">
+                                        <i class="fab fa-instagram"></i>
+                                    </span>
+                                    <input type="text" id="social-instagram" class="w-full bg-gray-900/50 border border-gray-800 text-white pl-10 pr-4 py-3 rounded-xl outline-none focus:border-primary transition" placeholder="https://instagram.com/...">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Facebook URL</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-600 text-lg">
+                                        <i class="fab fa-facebook"></i>
+                                    </span>
+                                    <input type="text" id="social-facebook" class="w-full bg-gray-900/50 border border-gray-800 text-white pl-10 pr-4 py-3 rounded-xl outline-none focus:border-primary transition" placeholder="https://facebook.com/...">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">YouTube Channel URL</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-red-600 text-lg">
+                                        <i class="fab fa-youtube"></i>
+                                    </span>
+                                    <input type="text" id="social-youtube" class="w-full bg-gray-900/50 border border-gray-800 text-white pl-10 pr-4 py-3 rounded-xl outline-none focus:border-primary transition" placeholder="https://youtube.com/...">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Threads URL</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-white text-lg">
+                                        <i class="fab fa-at"></i>
+                                    </span>
+                                    <input type="text" id="social-threads" class="w-full bg-gray-900/50 border border-gray-800 text-white pl-10 pr-4 py-3 rounded-xl outline-none focus:border-primary transition" placeholder="https://threads.net/...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEO Metadata -->
+                    <div class="bg-[#121212] rounded-3xl border border-gray-900 overflow-hidden shadow-xl">
+                        <div class="p-6 border-b border-gray-900 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                <i class="fas fa-search-dollar"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-sm tracking-wider uppercase font-display">SEO & Web Metadata</h4>
+                        </div>
+                        <div class="p-8 space-y-6">
+                            <div>
+                                <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Google / Browser Page Title Prefix</label>
+                                <input type="text" id="seo-title" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="Famous HD Biryani | Delicious Authenticity">
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Global Search Meta Description</label>
+                                <textarea id="seo-description" rows="3" class="w-full bg-gray-900/50 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="A brief description for Google to display in listings..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex items-center justify-end gap-3">
+                        <button onclick="saveSettings()" class="bg-primary hover:bg-primary-hover text-[#121212] px-8 py-3 rounded-xl text-sm font-bold transition shadow-lg shadow-primary/15">SAVE SITE SETTINGS</button>
                     </div>
                 </section>
 
@@ -203,70 +698,245 @@
         </main>
     </div>
 
-    <!-- MODAL: ADD/EDIT MENU ITEM -->
-    <div id="modal-menu" class="fixed inset-0 z-[5000] hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-[#121212] w-full max-w-2xl rounded-3xl border border-gray-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-            <div class="p-6 border-b border-gray-800 flex items-center justify-between">
-                <h3 id="menu-modal-title" class="text-xl font-bold text-white">Add New Food Item</h3>
-                <button onclick="closeModal('menu')" class="text-gray-500 hover:text-white transition"><i class="fas fa-times text-xl"></i></button>
+    <!-- ==============================================
+         MODALS AREA 
+         ============================================== -->
+
+    <!-- MODAL: ADD/EDIT OFFERS -->
+    <div id="modal-offer" class="fixed inset-0 z-[5000] hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[#121212] w-full max-w-3xl rounded-3xl border border-gray-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-gray-900 flex items-center justify-between">
+                <h3 id="offer-modal-title" class="text-xl font-bold text-white font-display">Create Special Promotion</h3>
+                <button onclick="closeModal('offer')" class="text-gray-500 hover:text-white transition"><i class="fas fa-times text-xl"></i></button>
             </div>
-            <form id="menu-item-form" class="p-8 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Item Name</label>
-                        <input type="text" id="menu-name" required class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. Chicken Dum Biryani">
-                    </div>
-                    <div>
-                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Price ($)</label>
-                        <input type="text" id="menu-price" required class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. 14.99">
-                    </div>
-                    <div>
-                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Category</label>
-                        <select id="menu-category" class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition">
-                            <option value="Biryanis">Biryanis</option>
-                            <option value="Pulavs">Pulavs</option>
-                            <option value="Appetizers">Appetizers</option>
-                            <option value="Curries">Curries</option>
-                            <option value="Tiffins">Tiffins</option>
-                            <option value="Breads">Breads</option>
-                            <option value="Desserts">Desserts</option>
-                            <option value="Drinks">Drinks</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Dietary</label>
-                        <select id="menu-dietary" class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition">
-                            <option value="non-veg">Non-Vegetarian</option>
-                            <option value="veg">Vegetarian</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Description</label>
-                    <textarea id="menu-description" rows="3" class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="Describe the flavors, spices, and ingredients..."></textarea>
-                </div>
-                <div>
-                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Item Image</label>
-                    <div class="flex items-center gap-4">
-                        <div id="image-preview" class="w-20 h-20 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center overflow-hidden">
-                            <i class="fas fa-image text-gray-700 text-2xl"></i>
+            
+            <form id="offer-form" class="p-8 space-y-6 overflow-y-auto custom-scrollbar flex-1">
+                <input type="hidden" id="offer-edit-id">
+                
+                <!-- Display switches -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-gray-950/50 p-4 rounded-2xl border border-gray-900">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="offer-enabled" checked class="w-5 h-5 accent-primary bg-gray-900 border-gray-800 rounded">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-semibold text-white">Offer Active</span>
+                            <span class="text-[9px] text-gray-500 uppercase">Master Switch</span>
                         </div>
-                        <input type="file" id="menu-image" accept="image/*" class="text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 cursor-pointer">
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="offer-popup-enabled" class="w-5 h-5 accent-primary bg-gray-900 border-gray-800 rounded">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-semibold text-white">Popup Modal</span>
+                            <span class="text-[9px] text-gray-500 uppercase">On Page Load</span>
+                        </div>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="offer-banner-enabled" class="w-5 h-5 accent-primary bg-gray-900 border-gray-800 rounded">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-semibold text-white">Marquee Banner</span>
+                            <span class="text-[9px] text-gray-500 uppercase">Below Header</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Offer / Promo Title</label>
+                        <input type="text" id="offer-title" required class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. SUNDAY SPECIAL">
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Discount Highlight Label</label>
+                        <input type="text" id="offer-discount" required class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. FLAT 10% OFF">
                     </div>
                 </div>
+
+                <div>
+                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Offer Detailed Description (Popup Body)</label>
+                    <textarea id="offer-description" rows="3" class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="Provide details like 'Order any two Biryanis today and get flat 10% discount instantly. Coupon applies automatically...'"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Scrolling Marquee Text (Announcements Banner)</label>
+                    <input type="text" id="offer-banner-text" class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition text-xs" placeholder="e.g. SUNDAY SPECIAL • GET 10% OFF TODAY ON EVERYTHING • USE CODE SUNDAY10 AT CHECKOUT...">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">CTA Button Text (in Popup)</label>
+                        <input type="text" id="offer-cta-text" class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. CLAIM SPECIAL OFFER">
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">CTA Button Destination Link (Ordering Link)</label>
+                        <input type="text" id="offer-cta-link" class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition text-xs" placeholder="https://online.skytab.com/...">
+                    </div>
+                </div>
+
+                <!-- Timing & Scheduling -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 p-5 bg-gray-950/30 border border-gray-900 rounded-2xl">
+                    <div>
+                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Start Time / Date</label>
+                        <input type="datetime-local" id="offer-start-date" required class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition text-sm cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Expiry Time / Date (Auto-Expires!)</label>
+                        <input type="datetime-local" id="offer-end-date" required class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition text-sm cursor-pointer">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Modal Accent Icon</label>
+                        <select id="offer-icon" class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition cursor-pointer">
+                            <option value="sun">☀️ Sun (Sunday / Holiday Special)</option>
+                            <option value="fire">🔥 Fire (Spicy Deals)</option>
+                            <option value="star">⭐ Star (Bestsellers / Signature)</option>
+                            <option value="gift">🎁 Gift (Freebies / Bundles)</option>
+                            <option value="percent">🏷️ Percent Label (Discounts)</option>
+                            <option value="bolt">⚡ Bolt (Flash Sale)</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="pt-4">
-                    <button type="submit" id="menu-submit-btn" class="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-xl shadow-primary/20 hover:bg-primary-hover transition">
-                        SAVE ITEM
+                    <button type="submit" id="offer-submit-btn" class="w-full bg-primary text-[#121212] font-bold py-4 rounded-2xl shadow-xl shadow-primary/20 hover:bg-primary-hover transition text-sm">
+                        SAVE AND DEPLOY PROMOTION
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Firebase Scripts -->
-    <script type="module" src="js/app.js"></script>
+    <!-- MODAL: ADD/EDIT DISH ITEMS -->
+    <div id="modal-menu" class="fixed inset-0 z-[5000] hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[#121212] w-full max-w-2xl rounded-3xl border border-gray-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+            <div class="p-6 border-b border-gray-900 flex items-center justify-between">
+                <h3 id="menu-modal-title" class="text-xl font-bold text-white font-display">Add Dynamic Culinary Item</h3>
+                <button onclick="closeModal('menu')" class="text-gray-500 hover:text-white transition"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <form id="menu-item-form" class="p-8 space-y-6">
+                <input type="hidden" id="menu-edit-id">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Dish Name</label>
+                        <input type="text" id="menu-name" required class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. Classic Chicken Biryani">
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Price Tag ($)</label>
+                        <input type="text" id="menu-price" required class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. 14.99">
+                    </div>
+                </div>
 
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Category</label>
+                        <select id="menu-category" class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition cursor-pointer">
+                            <option value="Quick Bites">Quick Bites</option>
+                            <option value="Veg Appetizers">Veg Appetizers</option>
+                            <option value="Non-Veg Appetizers">Non-Veg Appetizers</option>
+                            <option value="Veg Curries">Veg Curries</option>
+                            <option value="Non-Veg Curries">Non-Veg Curries</option>
+                            <option value="Breads">Breads</option>
+                            <option value="Indo-Chinese">Indo-Chinese</option>
+                            <option value="Tandoori">Tandoori / Kebabs</option>
+                            <option value="Biryanis">Regular Biryanis</option>
+                            <option value="Pulavs">Pulavs</option>
+                            <option value="Tiffins">Tiffin Specials</option>
+                            <option value="Chaat">Chaat / Street Snacks</option>
+                            <option value="Kids">Kids Menu</option>
+                            <option value="Desserts">Desserts</option>
+                            <option value="Drinks">Beverages</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Dietary Gating</label>
+                        <select id="menu-dietary" class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition cursor-pointer">
+                            <option value="non-veg">🍖 Non-Vegetarian</option>
+                            <option value="veg">🌱 Vegetarian</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Item Badge Label</label>
+                        <input type="text" id="menu-badge" class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="e.g. BESTSELLER, HOT">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Dish Composition / Description</label>
+                    <textarea id="menu-description" rows="3" class="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:border-primary transition" placeholder="Describe the spices, flavors, presentation details..."></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Visual Display Image</label>
+                    <div class="flex items-center gap-4 bg-gray-950/40 p-4 border border-gray-900 rounded-2xl">
+                        <div id="menu-image-preview" class="w-16 h-16 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center overflow-hidden shrink-0">
+                            <i class="fas fa-image text-gray-700 text-xl"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <input type="file" id="menu-image" accept="image/*" class="hidden" onchange="previewImageFile(this, 'menu-image-preview')">
+                            <button type="button" onclick="document.getElementById('menu-image').click()" class="bg-primary/20 hover:bg-primary/30 border border-primary/30 text-primary px-4 py-2 rounded-xl text-xs font-bold transition">SELECT PHOTO</button>
+                            <p class="text-[10px] text-gray-500 mt-1">Leaves existing image unchanged if empty</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-4 gap-4">
+                    <label class="flex items-center gap-2.5 cursor-pointer">
+                        <input type="checkbox" id="menu-visible" checked class="w-5 h-5 accent-primary bg-gray-900 border-gray-800 rounded">
+                        <span class="text-xs font-semibold text-white">Show on Public Menu</span>
+                    </label>
+                    <button type="submit" id="menu-submit-btn" class="bg-primary hover:bg-primary-hover text-[#121212] px-8 py-3.5 rounded-2xl text-xs font-bold transition shadow-xl shadow-primary/15 shrink-0">
+                        SAVE MENU DISH
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: STAGING / LIVE PREVIEW MODAL -->
+    <div id="preview-modal" class="fixed inset-0 z-[10000] hidden bg-black/95 flex flex-col">
+        <!-- Top Toolbar -->
+        <div class="h-16 bg-[#121212] border-b border-gray-900 px-6 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="w-2.5 h-2.5 bg-yellow-500 rounded-full animate-ping"></span>
+                <span class="text-xs font-bold text-gray-300 uppercase tracking-widest">Staging Sandbox Preview</span>
+            </div>
+            
+            <!-- Device Switchers -->
+            <div class="flex items-center gap-1.5 bg-gray-950 p-1.5 rounded-xl border border-gray-900">
+                <button onclick="switchPreviewDevice('desktop')" id="btn-device-desktop" class="w-8 h-8 rounded-lg flex items-center justify-center text-primary bg-primary/10 transition" title="Desktop Screen">
+                    <i class="fas fa-desktop text-sm"></i>
+                </button>
+                <button onclick="switchPreviewDevice('tablet')" id="btn-device-tablet" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-white transition" title="Tablet Screen">
+                    <i class="fas fa-tablet-alt text-sm"></i>
+                </button>
+                <button onclick="switchPreviewDevice('mobile')" id="btn-device-mobile" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-white transition" title="Mobile Phone">
+                    <i class="fas fa-mobile-alt text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Close btn -->
+            <button onclick="closePreview()" class="bg-red-500/10 hover:bg-red-500/25 border border-red-500/30 text-red-400 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fas fa-arrow-left"></i>
+                <span>BACK TO EDITOR</span>
+            </button>
+        </div>
+        
+        <!-- Iframe container -->
+        <div class="flex-1 bg-black flex items-center justify-center p-4">
+            <div id="preview-iframe-wrapper" class="w-full h-full transition-all duration-300 bg-[#0d0d0d] rounded-2xl border border-gray-900 overflow-hidden shadow-2xl">
+                <iframe id="preview-iframe" class="w-full h-full border-0 bg-transparent"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================
+         SCRIPTS INTERACTION & SYSTEM LOGIC
+         ============================================== -->
     <script>
+        // Global variables for tab switching and dashboard
+        let activeSection = 'overview';
+
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
@@ -280,25 +950,114 @@
             // Remove active from all sidebar items
             document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
             
-            // Show active section
-            document.getElementById('section-' + sectionId).classList.remove('hidden');
-            // Set active sidebar item
-            event.currentTarget.classList.add('active');
+            // Show target section
+            const targetEl = document.getElementById('section-' + sectionId);
+            if (targetEl) targetEl.classList.remove('hidden');
             
-            // Update title
-            document.getElementById('section-title').innerText = sectionId;
+            // Active state on sidebar buttons
+            const navBtn = document.getElementById('nav-' + sectionId);
+            if (navBtn) navBtn.classList.add('active');
+            
+            // Header title updates
+            const sectionNameMap = {
+                overview: 'Dashboard Overview',
+                offers: 'Offers & Promotions',
+                home: 'Home Page Editor',
+                menu: 'Menu Catalog Management',
+                about: 'About Page Editor',
+                gallery: 'Media Gallery Manager',
+                contact: 'Contact Info Details',
+                settings: 'Global Site Settings'
+            };
+            document.getElementById('section-title').innerText = sectionNameMap[sectionId] || sectionId;
+            activeSection = sectionId;
 
             // Close sidebar on mobile
             if (window.innerWidth < 1024) toggleSidebar();
         }
 
         function openModal(modalId) {
-            document.getElementById('modal-' + modalId).classList.remove('hidden');
+            const modal = document.getElementById('modal-' + modalId);
+            if (modal) modal.classList.remove('hidden');
         }
 
         function closeModal(modalId) {
-            document.getElementById('modal-' + modalId).classList.add('hidden');
+            const modal = document.getElementById('modal-' + modalId);
+            if (modal) modal.classList.add('hidden');
         }
+
+        // Live Image File Preview
+        function previewImageFile(input, previewId) {
+            const preview = document.getElementById(previewId);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Toast system
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast-notification');
+            const iconBox = document.getElementById('toast-icon-box');
+            const icon = document.getElementById('toast-icon');
+            const title = document.getElementById('toast-title');
+            const desc = document.getElementById('toast-message');
+
+            desc.innerText = message;
+
+            if (type === 'success') {
+                title.innerText = 'Success';
+                iconBox.className = 'w-10 h-10 rounded-xl flex items-center justify-center bg-green-500/10 border border-green-500/30 text-green-400';
+                icon.className = 'fas fa-check-circle';
+            } else if (type === 'error') {
+                title.innerText = 'Error';
+                iconBox.className = 'w-10 h-10 rounded-xl flex items-center justify-center bg-red-500/10 border border-red-500/30 text-red-400';
+                icon.className = 'fas fa-exclamation-circle';
+            } else {
+                title.innerText = 'System Alert';
+                iconBox.className = 'w-10 h-10 rounded-xl flex items-center justify-center bg-primary/10 border border-primary/30 text-primary';
+                icon.className = 'fas fa-info-circle';
+            }
+
+            // Animate toast
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 4000);
+        }
+
+        // Loader System
+        function showLoading() {
+            const overlay = document.getElementById('loading-overlay');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100');
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loading-overlay');
+            overlay.classList.remove('opacity-100');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // Live Local Time
+        setInterval(() => {
+            const timeEl = document.getElementById('stat-current-time');
+            if (timeEl) {
+                const now = new Date();
+                timeEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+        }, 1000);
     </script>
+
+    <!-- JS MODULE IMPORT ENGINES -->
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/preview.js"></script>
 </body>
 </html>
