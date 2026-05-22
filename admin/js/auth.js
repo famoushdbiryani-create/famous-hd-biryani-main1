@@ -38,16 +38,9 @@ if (loginForm) {
             window.location.href = 'dashboard.html';
         } catch (error) {
             errorMsg.classList.remove('hidden');
-            let userFriendlyMsg = "Invalid email or password. Please try again.";
-            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                userFriendlyMsg = "Incorrect email or password. Access denied.";
-            } else if (error.code === 'auth/invalid-credential') {
-                userFriendlyMsg = "Invalid credentials. Please verify and try again.";
-            } else if (error.code === 'auth/network-request-failed') {
-                userFriendlyMsg = "Network error. Please check your internet connection.";
-            }
-            errorMsg.innerText = userFriendlyMsg;
-            console.error("Login failed:", error.message);
+            // Display the exact Firebase error message for debugging purposes
+            errorMsg.innerText = "Error: " + error.code + " - " + error.message;
+            console.error("Login failed:", error);
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalBtnContent;
         }
