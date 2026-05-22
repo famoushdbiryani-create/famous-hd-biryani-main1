@@ -11,12 +11,12 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.1/firebase
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBVVxUJgA7sZF_v4Qv5IdsuRD2XIplw6X8",
+    apiKey: "AIzaSyBVVrUJgA7sZF_v4Qv5IdsuRD2XIplw6X8",
     authDomain: "famous-hd-biryani-new.firebaseapp.com",
     projectId: "famous-hd-biryani-new",
     storageBucket: "famous-hd-biryani-new.firebasestorage.app",
     messagingSenderId: "192509334649",
-    appId: "1:192509334649:web:7d7c50ada7bdbb1a6430a0"
+    appId: "1:192509334649:web:7d7e50ada7bdbb1a6430a8"
 };
 
 // Initialize Firebase
