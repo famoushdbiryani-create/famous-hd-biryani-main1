@@ -494,6 +494,7 @@ window.filterMenuSearch = function() {
 window.openMenuModal = function() {
     document.getElementById('menu-item-form').reset();
     document.getElementById('menu-edit-id').value = '';
+    document.getElementById('menu-image-url').value = '';
     document.getElementById('menu-modal-title').innerText = 'Add Dynamic Culinary Item';
     document.getElementById('menu-image-preview').innerHTML = '<i class="fas fa-image text-gray-700 text-xl"></i>';
     window.openModal('menu');
@@ -515,6 +516,7 @@ window.editMenuItem = async function(id) {
             document.getElementById('menu-description').value = data.description || '';
             document.getElementById('menu-badge').value = data.badge || '';
             document.getElementById('menu-visible').checked = !!data.visible;
+            document.getElementById('menu-image-url').value = data.imageUrl || '';
             
             const preview = document.getElementById('menu-image-preview');
             if (data.imageUrl) {
@@ -590,19 +592,33 @@ if (menuItemForm) {
         const imageFile = document.getElementById('menu-image').files[0];
         
         try {
-            let imageUrl = '';
-            
             // Handle image uploads
             if (imageFile) {
-                const storagePath = `menu_images/${Date.now()}_${imageFile.name}`;
-                const storageRef = ref(storage, storagePath);
-                await uploadBytes(storageRef, imageFile);
-                imageUrl = await getDownloadURL(storageRef);
-            } else if (id) {
-                // Keep existing image if not uploading new
-                const existingSnap = await getDoc(doc(db, 'menu_items', id));
-                if (existingSnap.exists()) {
-                    imageUrl = existingSnap.data().imageUrl || '';
+                try {
+                    const storagePath = `menu_images/${Date.now()}_${imageFile.name}`;
+                    const storageRef = ref(storage, storagePath);
+                    await uploadBytes(storageRef, imageFile);
+                    imageUrl = await getDownloadURL(storageRef);
+                } catch (uploadErr) {
+                    console.error("Storage upload failed:", uploadErr);
+                    const urlVal = document.getElementById('menu-image-url').value.trim();
+                    if (urlVal) {
+                        imageUrl = urlVal;
+                        window.showToast("Direct upload failed (Storage disabled). Used pasted Image URL instead.", "info");
+                    } else {
+                        throw new Error("Direct file upload requires Firebase Billing. Please paste an image URL instead.");
+                    }
+                }
+            } else {
+                const urlVal = document.getElementById('menu-image-url').value.trim();
+                if (urlVal) {
+                    imageUrl = urlVal;
+                } else if (id) {
+                    // Keep existing image if not uploading new
+                    const existingSnap = await getDoc(doc(db, 'menu_items', id));
+                    if (existingSnap.exists()) {
+                        imageUrl = existingSnap.data().imageUrl || '';
+                    }
                 }
             }
             
@@ -1051,7 +1067,45 @@ window.uploadGalleryFiles = async function(files) {
         window.showToast(`Successfully uploaded ${successCount} gallery photo(s)!`, "success");
     } catch (err) {
         console.error("Gallery upload error:", err);
-        window.showToast("Could not complete gallery media uploads.", "error");
+        window.showToast("File upload requires Billing. Please use 'Add Photo via Link' instead.", "error");
+    } finally {
+        if (window.hideLoading) window.hideLoading();
+    }
+};
+
+window.addGalleryItemByUrl = async function() {
+    const urlInput = document.getElementById('gallery-image-url');
+    const captionInput = document.getElementById('gallery-image-caption');
+    
+    if (!urlInput) return;
+    
+    const imageUrl = urlInput.value.trim();
+    const caption = (captionInput ? captionInput.value.trim() : '') || 'Gallery Image';
+    
+    if (!imageUrl) {
+        window.showToast("Please enter an image URL.", "error");
+        return;
+    }
+    
+    if (window.showLoading) window.showLoading();
+    try {
+        const category = selectedGalleryCategory === 'ALL' ? 'Food & Atmosphere' : selectedGalleryCategory;
+        
+        await addDoc(collection(db, 'gallery_items'), {
+            imageUrl: imageUrl,
+            caption: caption,
+            category: category,
+            visible: true,
+            order: 0,
+            createdAt: serverTimestamp()
+        });
+        
+        urlInput.value = '';
+        if (captionInput) captionInput.value = '';
+        window.showToast("Gallery image link added successfully!", "success");
+    } catch (err) {
+        console.error("Gallery link add error:", err);
+        window.showToast("Could not add gallery item.", "error");
     } finally {
         if (window.hideLoading) window.hideLoading();
     }

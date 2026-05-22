@@ -44,11 +44,23 @@
 <body class="bg-[#0a0a0a] text-gray-200 overflow-hidden font-body">
     <!-- Loading Overlay -->
     <div id="loading-overlay" class="fixed inset-0 bg-black/90 z-[9999] flex flex-col items-center justify-center gap-4 transition-opacity duration-300">
-        <div class="relative w-20 h-20">
+        <div id="loading-spinner" class="relative w-20 h-20">
             <div class="absolute inset-0 rounded-full border-4 border-primary/20"></div>
             <div class="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
         </div>
-        <p class="text-primary font-display text-lg tracking-wider font-semibold animate-pulse">CONNECTING SECURELY...</p>
+        <p id="loading-status-text" class="text-primary font-display text-lg tracking-wider font-semibold animate-pulse text-center px-6">CONNECTING SECURELY...</p>
+        <!-- Timeout fallback (hidden by default) -->
+        <div id="loading-timeout-actions" class="hidden flex flex-col items-center gap-3 mt-2">
+            <p class="text-gray-400 text-xs text-center max-w-sm leading-relaxed px-4">Firebase could not connect. Make sure <strong class="text-amber-400">famoushdbiryani.com</strong> is added as an authorized domain in Firebase Console → Authentication → Settings.</p>
+            <div class="flex gap-3">
+                <button onclick="location.reload()" class="px-6 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl font-semibold text-sm transition shadow-lg shadow-primary/20">
+                    <i class="fas fa-redo mr-2"></i>Retry Connection
+                </button>
+                <a href="index.html" class="px-6 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-xl font-semibold text-sm transition">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Go to Login
+                </a>
+            </div>
+        </div>
     </div>
 
     <!-- Toast Notification -->
@@ -531,7 +543,31 @@
                         </div>
                         <div>
                             <h4 class="text-white text-sm font-semibold">Drag & Drop visual food photos here</h4>
-                            <p class="text-gray-500 text-xs mt-1">Accepts PNG, JPG, JPEG, and WebP up to 10MB each</p>
+                            <p class="text-gray-500 text-xs mt-1">Accepts PNG, JPG, JPEG, and WebP up to 10MB each (requires Billing upgrade)</p>
+                        </div>
+                    </div>
+
+                    <!-- Add via Image URL Card (100% Free) -->
+                    <div class="bg-[#121212] p-6 rounded-3xl border border-gray-900 shadow-xl space-y-4">
+                        <h4 class="text-white font-bold text-sm tracking-wider uppercase font-display flex items-center gap-2">
+                            <i class="fas fa-link text-primary"></i>
+                            <span>Add Photo via Link (100% Free / No Billing Required)</span>
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-2">
+                                <label class="block text-gray-500 text-[10px] font-bold mb-1.5 uppercase tracking-widest">Image URL</label>
+                                <input type="text" id="gallery-image-url" class="w-full bg-gray-900 border border-gray-800 text-white px-3 py-2 rounded-xl text-xs outline-none focus:border-primary transition" placeholder="https://example.com/photo.jpg">
+                            </div>
+                            <div>
+                                <label class="block text-gray-500 text-[10px] font-bold mb-1.5 uppercase tracking-widest">Caption (Optional)</label>
+                                <input type="text" id="gallery-image-caption" class="w-full bg-gray-900 border border-gray-800 text-white px-3 py-2 rounded-xl text-xs outline-none focus:border-primary transition" placeholder="e.g. Delicious Chicken Biryani">
+                            </div>
+                        </div>
+                        <div class="flex justify-end pt-1">
+                            <button type="button" onclick="addGalleryItemByUrl()" class="bg-primary hover:bg-primary-hover text-[#121212] px-5 py-2.5 rounded-xl text-xs font-bold transition shadow-md shadow-primary/10 flex items-center gap-2">
+                                <i class="fas fa-plus"></i>
+                                <span>ADD LINKED PHOTO</span>
+                            </button>
                         </div>
                     </div>
 
@@ -898,14 +934,20 @@
 
                 <div>
                     <label class="block text-gray-500 text-xs font-bold mb-2 uppercase tracking-widest">Visual Display Image</label>
-                    <div class="flex items-center gap-4 bg-gray-950/40 p-4 border border-gray-900 rounded-2xl">
-                        <div id="menu-image-preview" class="w-16 h-16 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center overflow-hidden shrink-0">
-                            <i class="fas fa-image text-gray-700 text-xl"></i>
+                    <div class="flex flex-col gap-4 bg-gray-950/40 p-4 border border-gray-900 rounded-2xl">
+                        <div class="flex items-center gap-4">
+                            <div id="menu-image-preview" class="w-16 h-16 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center overflow-hidden shrink-0">
+                                <i class="fas fa-image text-gray-700 text-xl"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <input type="file" id="menu-image" accept="image/*" class="hidden" onchange="previewImageFile(this, 'menu-image-preview')">
+                                <button type="button" onclick="document.getElementById('menu-image').click()" class="bg-primary/20 hover:bg-primary/30 border border-primary/30 text-primary px-4 py-2 rounded-xl text-xs font-bold transition">UPLOAD PHOTO</button>
+                                <p class="text-[10px] text-gray-500 mt-1">Direct upload (requires Billing upgrade)</p>
+                            </div>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <input type="file" id="menu-image" accept="image/*" class="hidden" onchange="previewImageFile(this, 'menu-image-preview')">
-                            <button type="button" onclick="document.getElementById('menu-image').click()" class="bg-primary/20 hover:bg-primary/30 border border-primary/30 text-primary px-4 py-2 rounded-xl text-xs font-bold transition">SELECT PHOTO</button>
-                            <p class="text-[10px] text-gray-500 mt-1">Leaves existing image unchanged if empty</p>
+                        <div class="border-t border-gray-900/60 pt-3">
+                            <label class="block text-gray-500 text-[10px] font-bold mb-1.5 uppercase tracking-widest">Or Paste Image URL (100% Free)</label>
+                            <input type="text" id="menu-image-url" class="w-full bg-gray-900 border border-gray-800 text-white px-3 py-2 rounded-xl text-xs outline-none focus:border-primary transition" placeholder="https://example.com/image.jpg" oninput="previewImageUrl(this.value, 'menu-image-preview')">
                         </div>
                     </div>
                 </div>
@@ -1028,6 +1070,16 @@
             }
         }
 
+        // Live Image URL Preview
+        function previewImageUrl(url, previewId) {
+            const preview = document.getElementById(previewId);
+            if (url && url.trim()) {
+                preview.innerHTML = `<img src="${url.trim()}" class="w-full h-full object-cover" onerror="this.innerHTML='<i class=\'fas fa-exclamation-triangle text-red-500 text-xl\'></i>'">`;
+            } else {
+                preview.innerHTML = '<i class="fas fa-image text-gray-700 text-xl"></i>';
+            }
+        }
+
         // Toast system
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast-notification');
@@ -1083,6 +1135,46 @@
                 timeEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             }
         }, 1000);
+
+        // ============================================
+        // CONNECTION TIMEOUT FAILSAFE
+        // If Firebase doesn't connect within 15 seconds,
+        // show an error with retry option instead of
+        // spinning forever. This handles the case where
+        // the domain is not authorized in Firebase Auth.
+        // ============================================
+        window.__connectionTimer = setTimeout(() => {
+            const overlay = document.getElementById('loading-overlay');
+            // Only trigger if the overlay is still visible (not already hidden)
+            if (overlay && !overlay.classList.contains('pointer-events-none') && !overlay.classList.contains('opacity-0')) {
+                // Replace spinner with warning icon
+                const spinner = document.getElementById('loading-spinner');
+                if (spinner) {
+                    spinner.innerHTML = '<i class="fas fa-exclamation-triangle text-5xl text-amber-400"></i>';
+                    spinner.classList.remove('w-20', 'h-20');
+                }
+                // Update status text
+                const statusText = document.getElementById('loading-status-text');
+                if (statusText) {
+                    statusText.classList.remove('animate-pulse');
+                    statusText.classList.add('text-amber-400');
+                    statusText.textContent = 'CONNECTION TIMEOUT';
+                }
+                // Show retry actions
+                const actions = document.getElementById('loading-timeout-actions');
+                if (actions) {
+                    actions.classList.remove('hidden');
+                    actions.classList.add('flex');
+                }
+            }
+        }, 15000);
+
+        // Clear the timeout if loading succeeds
+        const origHideLoading = hideLoading;
+        hideLoading = function() {
+            clearTimeout(window.__connectionTimer);
+            origHideLoading();
+        };
     </script>
 
     <!-- JS MODULE IMPORT ENGINES -->
