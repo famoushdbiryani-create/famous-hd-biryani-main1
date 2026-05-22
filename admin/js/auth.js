@@ -4,6 +4,17 @@
 import { auth } from './firebase-config.js';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
+// Check for inactivity timeout URL parameter
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('timeout') === 'true') {
+    const errorMsg = document.getElementById('error-msg');
+    if (errorMsg) {
+        errorMsg.classList.remove('hidden', 'bg-red-500/10', 'border-red-500/50', 'text-red-500');
+        errorMsg.classList.add('bg-amber-500/10', 'border-amber-500/50', 'text-amber-400');
+        errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle mr-2 text-amber-500"></i><span>You have been logged out due to 5 minutes of inactivity.</span>';
+    }
+}
+
 // Handle Login
 const loginForm = document.getElementById('login-form');
 if (loginForm) {
@@ -54,7 +65,7 @@ window.logout = async () => {
 };
 
 // Check Auth State for Dashboard
-if (window.location.pathname.includes('dashboard.html')) {
+if (window.location.pathname.includes('dashboard')) {
     onAuthStateChanged(auth, (user) => {
         if (!user) {
             window.location.href = 'index.html';

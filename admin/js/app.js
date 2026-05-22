@@ -8,7 +8,7 @@ import {
 import { 
     ref, uploadBytes, getDownloadURL, deleteObject 
 } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js';
-import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
+import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js';
 
 // Global variables
 let activeOffers = [];
@@ -22,10 +22,38 @@ let currentTeamMembers = [];
 // ==========================================
 // 🔐 AUTHENTICATION CONTROL & GUARD
 // ==========================================
+// Auto-logout after 5 minutes of inactivity
+let inactivityTimeout;
+const INACTIVITY_LIMIT = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimeout);
+    inactivityTimeout = setTimeout(handleAutoLogout, INACTIVITY_LIMIT);
+}
+
+async function handleAutoLogout() {
+    try {
+        console.log("Inactivity limit reached. Logging out...");
+        await signOut(auth);
+        window.location.href = 'index.html?timeout=true';
+    } catch (err) {
+        console.error("Auto-logout failed:", err);
+        window.location.href = 'index.html?timeout=true';
+    }
+}
+
+function setupInactivityTracker() {
+    const events = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart', 'click'];
+    events.forEach(event => {
+        document.addEventListener(event, resetInactivityTimer, { passive: true });
+    });
+    resetInactivityTimer();
+}
+
 onAuthStateChanged(auth, (user) => {
     if (!user) {
         // Not authenticated, redirect to login
-        if (window.location.pathname.includes('dashboard.html')) {
+        if (window.location.pathname.includes('dashboard')) {
             window.location.href = 'index.html';
         }
     } else {
@@ -40,33 +68,42 @@ onAuthStateChanged(auth, (user) => {
             warningCard.classList.remove('hidden');
         }
 
+        // Setup activity tracking for auto-logout
+        setupInactivityTracker();
+
         // Initialize listeners
         initializeAdmin();
     }
 });
 
 // Initialize listeners and load data
-function initializeAdmin() {
+async function initializeAdmin() {
     if (auth.app.options.apiKey === 'REPLACE_WITH_YOUR_API_KEY') {
         if (window.hideLoading) window.hideLoading();
         return;
     }
 
-    // Set up Firestore Listeners
-    setupOffersListener();
-    setupMenuListener();
-    setupGalleryListener();
-    
-    // Load Static Pages Content
-    loadHomeContent();
-    loadAboutContent();
-    loadContactContent();
-    loadSettings();
-    
-    // Check if database is empty to show Setup Assist card
-    checkDatabaseEmpty();
-    
-    if (window.hideLoading) window.hideLoading();
+    try {
+        // Set up Firestore Listeners
+        setupOffersListener();
+        setupMenuListener();
+        setupGalleryListener();
+        
+        // Load Static Pages Content asynchronously and resiliently
+        await Promise.allSettled([
+            loadHomeContent(),
+            loadAboutContent(),
+            loadContactContent(),
+            loadSettings()
+        ]);
+        
+        // Check if database is empty to show Setup Assist card
+        await checkDatabaseEmpty();
+    } catch (error) {
+        console.error("Error during admin panel initialization:", error);
+    } finally {
+        if (window.hideLoading) window.hideLoading();
+    }
 }
 
 // ==========================================
