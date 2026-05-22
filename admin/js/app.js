@@ -1640,20 +1640,19 @@ window.seedDatabaseFromLiveSite = async function(isManual = false) {
             "Quick Bites": "Quick Bites",
             "Veg Appetizers": "Veg Appetizers",
             "Non-Veg Appetizers": "Non-Veg Appetizers",
-            "Specialty Biryanis": "Biryanis",
-            "Signature Biryanis": "Biryanis",
-            "Signature Pulavs": "Pulavs",
-            "Naan Breads": "Breads",
-            "Veg Curries": "Veg Curries",
+            "Vegetarian Curries": "Veg Curries",
             "Non-Veg Curries": "Non-Veg Curries",
-            "Beverages": "Drinks",
+            "Breads / Naan / Roti": "Breads",
             "Indo-Chinese": "Indo-Chinese",
             "Tandoori / Kebabs": "Tandoori",
             "Tandoori": "Tandoori",
+            "Regular Biryanis": "Biryanis",
+            "Pulavs": "Pulavs",
             "Tiffin Specials": "Tiffins",
             "Chaat / Street Snacks": "Chaat",
             "Kids Menu": "Kids",
-            "Desserts": "Desserts"
+            "Desserts": "Desserts",
+            "Beverages": "Drinks"
         };
         
         let menuCount = 0;
