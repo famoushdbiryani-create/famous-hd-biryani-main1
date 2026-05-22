@@ -351,11 +351,45 @@ function setupMenuListener() {
     const menuRef = collection(db, 'menu_items');
     const q = query(menuRef, orderBy('createdAt', 'desc'));
     
-    onSnapshot(q, (snapshot) => {
+    onSnapshot(q, async (snapshot) => {
         activeMenuItems = [];
-        snapshot.forEach((doc) => {
-            activeMenuItems.push({ id: doc.id, ...doc.data() });
+        let needsMigration = false;
+        const migrationBatch = writeBatch(db);
+        
+        snapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            let cat = data.category || "";
+            let updated = false;
+            
+            // Map legacy categories if present
+            if (cat === "Vegetarian Curries") {
+                cat = "Veg Curries";
+                updated = true;
+            } else if (cat === "Breads / Naan / Roti") {
+                cat = "Breads";
+                updated = true;
+            } else if (cat === "Regular Biryanis") {
+                cat = "Biryanis";
+                updated = true;
+            }
+            
+            if (updated) {
+                migrationBatch.update(docSnap.ref, { category: cat });
+                needsMigration = true;
+            }
+            
+            activeMenuItems.push({ id: docSnap.id, ...data, category: cat });
         });
+        
+        if (needsMigration) {
+            console.log("Auto-migrating legacy menu categories to standard codes...");
+            try {
+                await migrationBatch.commit();
+                console.log("Migration complete!");
+            } catch (err) {
+                console.error("Migration batch commit failed:", err);
+            }
+        }
         
         renderMenuList();
         updateStatCounters();
@@ -1714,10 +1748,45 @@ window.seedDatabaseFromLiveSite = async function(isManual = false) {
             let categoryText = "Quick Bites";
             if (categoryEl) {
                 const headerText = categoryEl.querySelector('h2')?.textContent?.trim();
-                if (headerText && catMap[headerText]) {
-                    categoryText = catMap[headerText];
-                } else if (headerText) {
-                    categoryText = headerText;
+                if (headerText) {
+                    const normHeader = headerText.toLowerCase().replace(/\s+/g, ' ').trim();
+                    if (normHeader.includes("vegetarian curries") || normHeader.includes("veg curries")) {
+                        categoryText = "Veg Curries";
+                    } else if (normHeader.includes("non-veg curries")) {
+                        categoryText = "Non-Veg Curries";
+                    } else if (normHeader.includes("bread") || normHeader.includes("naan") || normHeader.includes("roti")) {
+                        categoryText = "Breads";
+                    } else if (normHeader.includes("biryani")) {
+                        categoryText = "Biryanis";
+                    } else if (normHeader.includes("pulav")) {
+                        categoryText = "Pulavs";
+                    } else if (normHeader.includes("tiffin")) {
+                        categoryText = "Tiffins";
+                    } else if (normHeader.includes("chaat") || normHeader.includes("street")) {
+                        categoryText = "Chaat";
+                    } else if (normHeader.includes("kids")) {
+                        categoryText = "Kids";
+                    } else if (normHeader.includes("dessert")) {
+                        categoryText = "Desserts";
+                    } else if (normHeader.includes("beverage") || normHeader.includes("drink")) {
+                        categoryText = "Drinks";
+                    } else if (normHeader.includes("indo-chinese")) {
+                        categoryText = "Indo-Chinese";
+                    } else if (normHeader.includes("tandoori") || normHeader.includes("kebab")) {
+                        categoryText = "Tandoori";
+                    } else if (normHeader.includes("veg appetizer")) {
+                        categoryText = "Veg Appetizers";
+                    } else if (normHeader.includes("non-veg appetizer")) {
+                        categoryText = "Non-Veg Appetizers";
+                    } else if (normHeader.includes("quick bite")) {
+                        categoryText = "Quick Bites";
+                    } else {
+                        if (catMap[headerText]) {
+                            categoryText = catMap[headerText];
+                        } else {
+                            categoryText = headerText;
+                        }
+                    }
                 }
             }
             
