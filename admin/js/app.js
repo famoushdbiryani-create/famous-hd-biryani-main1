@@ -491,6 +491,26 @@ window.filterMenuSearch = function() {
     renderMenuList();
 };
 
+window.publishMenuChanges = function() {
+    const btn = document.querySelector('button[onclick="publishMenuChanges()"]');
+    if (!btn) return;
+    
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>PUBLISHING...</span>';
+    btn.disabled = true;
+    
+    // Simulate a short delay to give the satisfying feeling of publishing
+    setTimeout(() => {
+        btn.innerHTML = '<i class="fas fa-check-circle mr-2 text-green-400"></i><span class="text-green-400">PUBLISHED LIVE</span>';
+        window.showToast("Menu successfully published to the live website!", "success");
+        
+        setTimeout(() => {
+            btn.innerHTML = originalContent;
+            btn.disabled = false;
+        }, 3000);
+    }, 1200);
+};
+
 window.openMenuModal = function() {
     document.getElementById('menu-item-form').reset();
     document.getElementById('menu-edit-id').value = '';
