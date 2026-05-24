@@ -42,17 +42,17 @@ if (firebaseConfig.apiKey === 'REPLACE_WITH_YOUR_API_KEY') {
         if (path === '/' || path.includes('index.html') || path === '/FHDB-WEBSITE-DEPLOY-0/' || path.includes('FHDB-WEBSITE-DEPLOY-0/index.html')) {
             syncHomePage(db, contentCollection);
         }
-        if (path.includes('menu.html')) {
+        if (path.includes('menu')) {
             const menuColl = isPreview ? 'menu_items' : 'menu_items_live';
             syncMenuPage(db, menuColl);
         }
-        if (path.includes('about.html')) {
+        if (path.includes('about')) {
             syncAboutPage(db, contentCollection);
         }
-        if (path.includes('gallery.html')) {
+        if (path.includes('gallery')) {
             syncGalleryPage(db);
         }
-        if (path.includes('contact.html')) {
+        if (path.includes('contact')) {
             syncContactPage(db, contentCollection);
         }
         
