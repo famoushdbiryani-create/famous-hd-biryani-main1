@@ -43,7 +43,8 @@ if (firebaseConfig.apiKey === 'REPLACE_WITH_YOUR_API_KEY') {
             syncHomePage(db, contentCollection);
         }
         if (path.includes('menu.html')) {
-            syncMenuPage(db);
+            const menuColl = isPreview ? 'menu_items' : 'menu_items_live';
+            syncMenuPage(db, menuColl);
         }
         if (path.includes('about.html')) {
             syncAboutPage(db, contentCollection);
@@ -324,9 +325,9 @@ async function syncHomePage(db, collectionName) {
 // ==========================================
 // 🍽️ MENU DYNAMIC INJECTION
 // ==========================================
-async function syncMenuPage(db) {
+async function syncMenuPage(db, collectionName) {
     try {
-        const menuRef = collection(db, 'menu_items');
+        const menuRef = collection(db, collectionName);
         const q = query(menuRef, where('visible', '==', true));
         const querySnapshot = await getDocs(q);
         
@@ -407,8 +408,8 @@ async function syncMenuPage(db) {
                     </div>
                 `).join('');
                 
-                // Prepend dynamic items before hardcoded content to feature them!
-                container.insertAdjacentHTML('afterbegin', dynamicHtml);
+                // Overwrite hardcoded fallback content with real dynamic data!
+                container.innerHTML = dynamicHtml;
             }
         }
     } catch (err) {

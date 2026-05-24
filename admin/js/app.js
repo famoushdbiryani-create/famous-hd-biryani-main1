@@ -491,7 +491,7 @@ window.filterMenuSearch = function() {
     renderMenuList();
 };
 
-window.publishMenuChanges = function() {
+window.publishMenuChanges = async function() {
     const btn = document.querySelector('button[onclick="publishMenuChanges()"]');
     if (!btn) return;
     
@@ -499,16 +499,37 @@ window.publishMenuChanges = function() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>PUBLISHING...</span>';
     btn.disabled = true;
     
-    // Simulate a short delay to give the satisfying feeling of publishing
-    setTimeout(() => {
+    try {
+        const snapshot = await getDocs(collection(db, 'menu_items'));
+        const batch = writeBatch(db);
+        
+        snapshot.forEach(docSnap => {
+            const liveRef = doc(db, 'menu_items_live', docSnap.id);
+            batch.set(liveRef, docSnap.data());
+        });
+        
+        const liveSnapshot = await getDocs(collection(db, 'menu_items_live'));
+        liveSnapshot.forEach(liveDoc => {
+            if (!snapshot.docs.find(d => d.id === liveDoc.id)) {
+                batch.delete(doc(db, 'menu_items_live', liveDoc.id));
+            }
+        });
+        
+        await batch.commit();
+        
         btn.innerHTML = '<i class="fas fa-check-circle mr-2 text-green-400"></i><span class="text-green-400">PUBLISHED LIVE</span>';
         window.showToast("Menu successfully published to the live website!", "success");
-        
-        setTimeout(() => {
+    } catch (err) {
+        console.error("Publish Failed:", err);
+        window.showToast("Failed to publish menu.", "error");
+    }
+    
+    setTimeout(() => {
+        if(btn) {
             btn.innerHTML = originalContent;
             btn.disabled = false;
-        }, 3000);
-    }, 1200);
+        }
+    }, 3000);
 };
 
 window.openMenuModal = function() {
