@@ -375,37 +375,40 @@ async function syncMenuPage(db, collectionName) {
             let container = targetSection.querySelector('.fluid-grid') || targetSection.querySelector('.grid') || targetSection.querySelector('.menu-grid');
             
             if (container) {
-                // Prepend dynamically loaded database dishes before static fallback items
                 const dynamicHtml = dishes.map(dish => `
-                    <div class="bg-[#121212] rounded-3xl border border-gray-900 overflow-hidden flex flex-col justify-between hover:border-primary/20 transition duration-300" data-dish-id="${catName.toLowerCase()}-dynamic" data-veg="${dish.dietary === 'veg'}" data-search="${dish.name.toLowerCase()} ${catName.toLowerCase()}">
-                        <div class="relative h-48 bg-gray-950 flex items-center justify-center overflow-hidden">
-                            ${dish.imageUrl ? 
-                                `<img src="${dish.imageUrl}" class="w-full h-full object-cover">` : 
-                                `<i class="fas fa-bowl-food text-gray-800 text-5xl"></i>`
-                            }
-                            
-                            <!-- Diet indicator -->
-                            <span class="absolute top-4 right-4 text-[8px] font-bold tracking-wider px-2 py-0.5 rounded uppercase ${dish.dietary === 'veg' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}">
-                                ${dish.dietary === 'veg' ? '🌱 Veg' : '🍖 Non-Veg'}
-                            </span>
-                            
-                            ${dish.badge ? `<span class="absolute top-4 left-4 text-[8px] font-bold tracking-wider px-2.5 py-0.5 rounded bg-primary text-[#121212] uppercase">${dish.badge}</span>` : ''}
-                        </div>
-                        
-                        <div class="p-6 flex-1 flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-start justify-between gap-3 mb-2">
-                                    <h4 class="text-white font-bold text-sm tracking-wide font-display">${dish.name}</h4>
-                                    <span class="text-primary font-bold text-sm">$${dish.price}</span>
-                                </div>
-                                <p class="text-gray-400 text-xs leading-relaxed line-clamp-3 mb-4">${dish.description || ''}</p>
+                        <!-- Food Item Layout: Horizontal -->
+                        <div data-dish-id="${catName.toLowerCase()}-dynamic" data-veg="${dish.dietary === 'veg'}" data-search="${dish.name.toLowerCase()} ${catName.toLowerCase()}" class="menu-item-card group flex items-start md:items-center gap-4 md:gap-8 p-4 md:p-6 transition-all duration-300 relative cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-2xl" data-original-name="${dish.name}" style="display: flex; perspective: 1000px; transform-style: preserve-3d;">
+
+                            <!-- Left: Circular Food Image -->
+                            <div class="w-20 h-20 md:w-40 md:h-40 shrink-0 rounded-full overflow-hidden shadow-lg border-2 border-primary/10 group-hover:border-primary/30 group-hover:shadow-2xl transition-all duration-300 relative card-tilt-image">
+                                ${dish.imageUrl ? 
+                                    `<img alt="${dish.name}" class="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500" src="${dish.imageUrl}" loading="lazy" width="640" height="640" decoding="async">` : 
+                                    `<div class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800"><i class="fas fa-bowl-food text-gray-400 text-3xl md:text-5xl"></i></div>`
+                                }
                             </div>
-                            
-                            <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" target="_blank" class="w-full bg-[#1b1b1b] border border-gray-800 hover:border-primary/50 text-gray-300 hover:text-white font-semibold py-3.5 rounded-xl transition text-center text-xs tracking-wider uppercase block">
-                                Grab Yours
-                            </a>
+
+                            <!-- Right: Dish Info -->
+                            <div class="flex-1 flex flex-col justify-center min-w-0">
+                                <div class="flex justify-between items-start mb-1">
+                                    <h3 class="font-display text-lg md:text-2xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors leading-tight truncate dish-name">${dish.name}</h3>
+                                </div>
+                                <p class="text-gray-500 dark:text-gray-400 text-xs md:text-base mb-2 md:mb-4 line-clamp-2 italic dish-desc">${dish.description || ''}</p>
+
+                                <div class="flex flex-wrap items-center gap-3 md:gap-6">
+                                    <span class="text-primary font-bold text-lg md:text-2xl tracking-tight dish-price">$${dish.price}</span>
+                                    <span class="badge-sm ${dish.dietary === 'veg' ? 'bg-green-600/10 text-green-600 border-green-600/20' : 'bg-red-600/10 text-red-600 border-red-600/20'} px-2 py-0.5 rounded-full text-[10px] md:text-xs font-bold border">${dish.dietary === 'veg' ? 'VEG' : 'NON-VEG'}</span>
+                                    ${dish.badge ? `<span class="badge-sm bg-primary/20 text-primary border-primary/30 px-2 py-0.5 rounded-full text-[10px] md:text-xs font-bold border ml-2">${dish.badge}</span>` : ''}
+
+                                    <a href="https://online.skytab.com/2d1f6d95e37f74d029fc5b1b9733c4df/order-settings" rel="noopener noreferrer" target="_blank" class="grab-yours-btn ml-auto md:ml-0 flex items-center justify-center gap-2 bg-primary/5 hover:bg-primary text-primary hover:text-white px-4 md:px-6 h-8 md:h-11 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest border border-primary/20 transition-all duration-300 shadow-sm hover:shadow-md">
+                                        ORDER NOW <i class="fas fa-arrow-right text-[8px] md:text-[10px]"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Hover Spotlight overlay -->
+                            <div class="spotlight pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" style="background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(200, 164, 93, 0.05), transparent 70%);">
+                            </div>
                         </div>
-                    </div>
                 `).join('');
                 
                 // Overwrite hardcoded fallback content with real dynamic data!
