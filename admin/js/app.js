@@ -491,6 +491,65 @@ window.filterMenuSearch = function() {
     renderMenuList();
 };
 
+window.publishAllChanges = async function() {
+    const btn = document.getElementById('header-publish-btn');
+    if (!btn) return;
+    
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>PUBLISHING...</span>';
+    btn.disabled = true;
+    
+    try {
+        const batch = writeBatch(db);
+
+        // 1. Publish Menu
+        const snapshot = await getDocs(collection(db, 'menu_items'));
+        const liveSnapshot = await getDocs(collection(db, 'menu_items_live'));
+        
+        snapshot.forEach(docSnap => {
+            const liveRef = doc(db, 'menu_items_live', docSnap.id);
+            batch.set(liveRef, docSnap.data());
+        });
+        
+        liveSnapshot.forEach(liveDoc => {
+            if (!snapshot.docs.find(d => d.id === liveDoc.id)) {
+                batch.delete(doc(db, 'menu_items_live', liveDoc.id));
+            }
+        });
+
+        // 2. Publish Content Pages (Home, About, Contact, Footer, SEO, etc)
+        const contentDocs = [
+            'home_hero', 'home_story', 'home_testimonials', 
+            'about_hero', 'about_mission', 'about_team', 
+            'contact_info', 'footer', 'social_links', 'seo_meta'
+        ];
+        
+        for (const docId of contentDocs) {
+            const draftSnap = await getDoc(doc(db, 'preview_content', docId));
+            if (draftSnap.exists()) {
+                batch.set(doc(db, 'site_content', docId), draftSnap.data());
+            }
+        }
+        
+        await batch.commit();
+        
+        btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i><span>PUBLISHED LIVE</span>';
+        window.showToast("All changes published to live website!", "success");
+        
+    } catch (err) {
+        console.error("Error publishing all changes:", err);
+        window.showToast("Error publishing changes. See console.", "error");
+        btn.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i><span>ERROR</span>';
+    }
+    
+    setTimeout(() => {
+        if(btn) {
+            btn.innerHTML = originalContent;
+            btn.disabled = false;
+        }
+    }, 3000);
+};
+
 window.publishMenuChanges = async function() {
     const btn = document.querySelector('button[onclick="publishMenuChanges()"]');
     if (!btn) return;
