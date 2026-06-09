@@ -466,7 +466,12 @@
     <style id="menu-layout-fixes">
         /* ===== ISSUE 1: Category Bar Sticky Offset ===== */
         #menu-category-bar {
-            top: var(--header-height, 90px);
+            top: calc(70px + var(--marquee-height, 0px));
+        }
+        @media (min-width: 1024px) {
+            #menu-category-bar {
+                top: calc(80px + var(--marquee-height, 0px));
+            }
         }
 
         /* ===== ISSUE 3: Category Icon Size & Bar Height ===== */
@@ -1688,5 +1693,28 @@
     </div>
 
     <script type="module" src="/firebase-data-sync.js?v=2"></script>
+    <script>
+        // Dynamically adjust category bar sticky offset based on marquee presence
+        function updateMarqueeOffset() {
+            const marquee = document.querySelector('.offer-marquee-container');
+            const catBar = document.getElementById('menu-category-bar');
+            if (catBar) {
+                if (marquee && marquee.offsetParent !== null) {
+                    // Marquee is visible
+                    catBar.style.setProperty('--marquee-height', marquee.offsetHeight + 'px');
+                } else {
+                    // Marquee removed or hidden
+                    catBar.style.setProperty('--marquee-height', '0px');
+                }
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', updateMarqueeOffset);
+        window.addEventListener('resize', updateMarqueeOffset);
+        
+        // Use a MutationObserver to detect if marquee is removed dynamically
+        const observer = new MutationObserver(updateMarqueeOffset);
+        observer.observe(document.body, { childList: true, subtree: true });
+    </script>
 </body>
 </html>
