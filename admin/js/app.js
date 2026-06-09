@@ -638,9 +638,19 @@ window.editMenuItem = async function(id) {
 
 window.toggleMenuVisible = async function(id, currentState) {
     try {
-        const docRef = doc(db, 'menu_items', id);
-        await updateDoc(docRef, { visible: !currentState });
-        window.showToast("Dish visibility toggled successfully.", "success");
+        const newVisible = !currentState;
+        const batch = writeBatch(db);
+        // Update draft
+        batch.update(doc(db, 'menu_items', id), { visible: newVisible });
+        // Update live immediately so Publish Now correctly reflects visibility
+        batch.update(doc(db, 'menu_items_live', id), { visible: newVisible });
+        await batch.commit();
+        window.showToast(
+            newVisible ? "Dish is now visible on site!" : "Dish hidden from site!",
+            newVisible ? "success" : "info"
+        );
+        // Re-render list to show updated badge
+        renderMenuList();
     } catch (err) {
         console.error("Error toggling menu item:", err);
         window.showToast("Failed to toggle dish visibility.", "error");

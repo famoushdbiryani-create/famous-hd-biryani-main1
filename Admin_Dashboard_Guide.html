@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Famous HD Biryani – Admin Dashboard Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .page-break { page-break-before: always; }
+            .no-print { display: none; }
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5f1eb;
+            color: #2a1f12;
+        }
+
+        /* --- COVER PAGE --- */
+        .cover {
+            background: #1a0e05;
+            min-height: 297mm;
+            width: 210mm;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 60px 50px;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: -100px; left: -100px;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(200,164,93,0.3) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .cover::after {
+            content: '';
+            position: absolute;
+            bottom: -80px; right: -80px;
+            width: 350px; height: 350px;
+            background: radial-gradient(circle, rgba(200,164,93,0.2) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .cover-logo-ring {
+            width: 120px; height: 120px;
+            border: 3px solid #C8A45D;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cover-logo-ring svg { width: 60px; height: 60px; fill: #C8A45D; }
+
+        .cover-tag {
+            background: rgba(200,164,93,0.15);
+            border: 1px solid rgba(200,164,93,0.4);
+            color: #C8A45D;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 50px;
+            margin-bottom: 24px;
+            position: relative; z-index: 1;
+        }
+
+        .cover h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 44px;
+            font-weight: 800;
+            color: #fff;
+            text-align: center;
+            line-height: 1.2;
+            position: relative; z-index: 1;
+            margin-bottom: 16px;
+        }
+
+        .cover h1 span { color: #C8A45D; display: block; }
+
+        .cover-subtitle {
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            line-height: 1.7;
+            max-width: 380px;
+            position: relative; z-index: 1;
+            margin-bottom: 50px;
+        }
+
+        .cover-divider {
+            width: 80px; height: 2px;
+            background: linear-gradient(to right, transparent, #C8A45D, transparent);
+            margin-bottom: 50px;
+            position: relative; z-index: 1;
+        }
+
+        .cover-cred-box {
+            background: rgba(200,164,93,0.08);
+            border: 1px solid rgba(200,164,93,0.3);
+            border-radius: 16px;
+            padding: 28px 40px;
+            width: 100%;
+            max-width: 420px;
+            position: relative; z-index: 1;
+            margin-bottom: 40px;
+        }
+
+        .cover-cred-box h3 {
+            color: #C8A45D;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .cred-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(200,164,93,0.1);
+        }
+
+        .cred-row:last-child { border-bottom: none; }
+
+        .cred-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .cred-value {
+            font-size: 12px;
+            font-weight: 700;
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+
+        .cover-footer {
+            position: absolute;
+            bottom: 30px;
+            color: rgba(255,255,255,0.2);
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            z-index: 1;
+        }
+
+        /* --- CONTENT PAGES --- */
+        .content-page {
+            background: #fff;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 50px 55px;
+            position: relative;
+        }
+
+        .content-page::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 6px; height: 100%;
+            background: linear-gradient(to bottom, #C8A45D, #8B6914);
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f0e8da;
+            margin-bottom: 36px;
+        }
+
+        .page-header-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 13px;
+            font-weight: 700;
+            color: #C8A45D;
+            letter-spacing: 1px;
+        }
+
+        .page-header-section {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #b0916a;
+        }
+
+        /* Section Title */
+        .section-block { margin-bottom: 36px; }
+
+        .section-number {
+            display: inline-block;
+            background: #C8A45D;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 800;
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            text-align: center;
+            line-height: 28px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .section-title-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a0e05;
+        }
+
+        .section-intro {
+            font-size: 13px;
+            color: #6b5a44;
+            line-height: 1.8;
+            margin-bottom: 18px;
+        }
+
+        /* Step boxes */
+        .steps-container { counter-reset: step; }
+
+        .step {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 14px;
+            align-items: flex-start;
+        }
+
+        .step-num {
+            width: 28px; height: 28px;
+            background: linear-gradient(135deg, #C8A45D, #8B6914);
+            border-radius: 50%;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-text {
+            font-size: 13px;
+            color: #3d2c18;
+            line-height: 1.7;
+        }
+
+        .step-text strong { color: #1a0e05; }
+
+        /* Info boxes */
+        .info-box {
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin-bottom: 18px;
+        }
+
+        .info-box.gold {
+            background: #fdf8ef;
+            border: 1px solid #e8d5a3;
+        }
+
+        .info-box.green {
+            background: #f0faf3;
+            border: 1px solid #a7d5b5;
+        }
+
+        .info-box.red {
+            background: #fff5f5;
+            border: 1px solid #f5c0c0;
+        }
+
+        .info-box.blue {
+            background: #f0f6ff;
+            border: 1px solid #b0ceee;
+        }
+
+        .info-box-title {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .info-box.gold .info-box-title { color: #8B6914; }
+        .info-box.green .info-box-title { color: #1a6e3b; }
+        .info-box.red .info-box-title { color: #8b1a1a; }
+        .info-box.blue .info-box-title { color: #1a3a6e; }
+
+        .info-box p { font-size: 12.5px; color: #4a3b28; line-height: 1.7; }
+
+        /* Table */
+        .field-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .field-table th {
+            background: #1a0e05;
+            color: #C8A45D;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        .field-table td {
+            padding: 11px 16px;
+            font-size: 12.5px;
+            color: #3d2c18;
+            border-bottom: 1px solid #f0e8da;
+            line-height: 1.6;
+        }
+
+        .field-table tr:nth-child(even) td { background: #fdf8ef; }
+        .field-table tr:last-child td { border-bottom: none; }
+
+        .badge-required {
+            background: #fdeaea;
+            color: #c0392b;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 50px;
+        }
+
+        .badge-optional {
+            background: #eaf3fd;
+            color: #2471a3;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 50px;
+        }
+
+        /* Action icons */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 18px 0;
+        }
+
+        .action-card {
+            background: #fdf8ef;
+            border: 1px solid #e8d5a3;
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .action-icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .action-icon.edit { background: #eaf3fd; }
+        .action-icon.hide { background: #fff8e1; }
+        .action-icon.delete { background: #fdeaea; }
+        .action-icon.add { background: #f0faf3; }
+
+        .action-card h4 { font-size: 12px; font-weight: 700; color: #1a0e05; margin-bottom: 4px; }
+        .action-card p { font-size: 11.5px; color: #6b5a44; line-height: 1.6; }
+
+        /* Publish flow */
+        .publish-flow {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 20px 0;
+        }
+
+        .pub-step {
+            flex: 1;
+            text-align: center;
+            padding: 20px 12px;
+            background: #fdf8ef;
+            border: 1px solid #e8d5a3;
+        }
+
+        .pub-step:first-child { border-radius: 12px 0 0 12px; }
+        .pub-step:last-child { border-radius: 0 12px 12px 0; border-left: none; }
+
+        .pub-step + .pub-step { border-left: none; }
+
+        .pub-arrow {
+            width: 32px;
+            font-size: 20px;
+            color: #C8A45D;
+            text-align: center;
+            flex-shrink: 0;
+            font-weight: 700;
+        }
+
+        .pub-step-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .pub-step h5 {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1a0e05;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .pub-step p { font-size: 10.5px; color: #6b5a44; line-height: 1.5; }
+
+        /* URL display */
+        .url-display {
+            background: #1a0e05;
+            border-radius: 10px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0;
+        }
+
+        .url-display span:first-child {
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .url-display a {
+            font-size: 13px;
+            font-weight: 600;
+            color: #C8A45D;
+            text-decoration: none;
+            font-family: monospace;
+        }
+
+        /* Print button */
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #C8A45D, #8B6914);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 28px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(200,164,93,0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .print-btn:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+<!-- Print Button -->
+<button class="print-btn no-print" onclick="window.print()">
+    🖨️ Save as PDF / Print
+</button>
+
+<!-- ===== COVER PAGE ===== -->
+<div class="cover">
+    <div class="cover-logo-ring">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+        </svg>
+    </div>
+    <div class="cover-tag">Official Documentation · Confidential</div>
+    <h1>Admin Dashboard <span>User Guide</span></h1>
+    <p class="cover-subtitle">A complete step-by-step guide for managing the Famous HD Biryani website. Learn how to update the menu, manage offers, publish changes, and more.</p>
+    <div class="cover-divider"></div>
+    
+    <div class="cover-cred-box">
+        <h3>🔐 Admin Login Credentials</h3>
+        <div class="cred-row">
+            <span class="cred-label">Admin URL</span>
+            <span class="cred-value">famoushdbiryani.com/admin</span>
+        </div>
+        <div class="cred-row">
+            <span class="cred-label">Email</span>
+            <span class="cred-value">famoushdbiryanii@gmail.com</span>
+        </div>
+        <div class="cred-row">
+            <span class="cred-label">Password</span>
+            <span class="cred-value">FamousHDBiryaniAdmin2026!</span>
+        </div>
+    </div>
+    
+    <p class="cover-footer">Famous HD Biryani &nbsp;·&nbsp; Website Admin Guide &nbsp;·&nbsp; 2026</p>
+</div>
+
+<!-- ===== PAGE 2: Login + PostImages ===== -->
+<div class="content-page page-break">
+    <div class="page-header">
+        <span class="page-header-brand">Famous HD Biryani</span>
+        <span class="page-header-section">Getting Started</span>
+    </div>
+
+    <!-- Section 1: Accessing Dashboard -->
+    <div class="section-block">
+        <div class="section-title-row">
+            <span class="section-number">1</span>
+            <h2 class="section-title">Accessing the Admin Dashboard</h2>
+        </div>
+        <p class="section-intro">Your admin dashboard is a private, secure area of your website. Only you (the administrator) can access it using your login credentials. No one else can make changes to your website.</p>
+        
+        <div class="url-display">
+            <span>Admin URL</span>
+            <a href="#">https://famoushdbiryani.com/admin</a>
+        </div>
+
+        <div class="info-box gold">
+            <p class="info-box-title">🔐 Your Login Details</p>
+            <p><strong>Email:</strong> famoushdbiryanii@gmail.com<br>
+            <strong>Password:</strong> FamousHDBiryaniAdmin2026!<br><br>
+            <strong>Keep this information private.</strong> Never share your login with anyone you do not trust.</p>
+        </div>
+
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-text">Open your web browser (Chrome or Safari recommended) and go to <strong>famoushdbiryani.com/admin</strong></div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-text">Enter your <strong>Admin Email</strong> and <strong>Password</strong> in the login form.</div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-text">Click the <strong>Sign In</strong> button. The dashboard will load and show you the Overview page.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: PostImages -->
+    <div class="section-block">
+        <div class="section-title-row">
+            <span class="section-number">2</span>
+            <h2 class="section-title">How to Upload Food Images (PostImages.org)</h2>
+        </div>
+        <p class="section-intro">The website uses a free image hosting service called <strong>PostImages.org</strong> to display photos of your food items. This is fast, free, and very easy to use. Follow these steps every time you need to add a new food photo.</p>
+
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-text">Open a new browser tab and go to <strong>https://postimages.org/</strong></div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-text">Click the large <strong>"Choose Images"</strong> button in the center of the page.</div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-text">Select your food photo from your computer or phone. Wait a few seconds for it to upload.</div>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-text">After uploading, you will see a results page with several different link types listed.</div>
+            </div>
+            <div class="step">
+                <div class="step-num">5</div>
+                <div class="step-text">Find the row that says <strong>"Direct link"</strong>. It is the link that ends in <strong>.jpg</strong>, <strong>.png</strong>, or <strong>.webp</strong>.</div>
+            </div>
+            <div class="step">
+                <div class="step-num">6</div>
+                <div class="step-text">Click the <strong>copy button</strong> (clipboard icon) next to the Direct link. The link is now copied.</div>
+            </div>
+            <div class="step">
+                <div class="step-num">7</div>
+                <div class="step-text">Go back to your Admin Dashboard and <strong>paste</strong> (Ctrl+V or Cmd+V) the link into the <strong>"Image URL"</strong> field.</div>
+            </div>
+        </div>
+
+        <div class="info-box red">
+            <p class="info-box-title">⚠️ Important</p>
+            <p>Only use the <strong>Direct Link</strong> from PostImages.org — not the "Hotlink for forums", "Thumbnail link", or "Viewer link". The Direct link is the one that ends directly in <code>.jpg</code> or <code>.png</code>.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 3: Menu Management ===== -->
+<div class="content-page page-break">
+    <div class="page-header">
+        <span class="page-header-brand">Famous HD Biryani</span>
+        <span class="page-header-section">Menu Management</span>
+    </div>
+
+    <div class="section-block">
+        <div class="section-title-row">
+            <span class="section-number">3</span>
+            <h2 class="section-title">Managing Your Menu</h2>
+        </div>
+        <p class="section-intro">The <strong>Menu Management</strong> section (click it in the left sidebar) is where you add, edit, hide, or remove food dishes on your website. All changes are saved as a draft until you hit "Publish Now".</p>
+
+        <h3 style="font-size:15px; font-weight:700; color:#1a0e05; margin-bottom:14px;">✅ Adding a New Dish</h3>
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-text">Click <strong>"+ Add New Dish"</strong> at the top of the Menu Management page.</div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-text">A form will appear. Fill in all the details (see the table below).</div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-text">Click <strong>"Save Menu Dish"</strong>. The item is now saved as a draft.</div>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-text">Click the <strong>green "PUBLISH NOW"</strong> button in the top header to push it to the live website.</div>
+            </div>
+        </div>
+
+        <table class="field-table">
+            <tr>
+                <th>Field Name</th>
+                <th>What to Enter</th>
+                <th>Required?</th>
+            </tr>
+            <tr>
+                <td><strong>Name</strong></td>
+                <td>The dish name (e.g., Chicken 65, Hyderabadi Biryani)</td>
+                <td><span class="badge-required">Required</span></td>
+            </tr>
+            <tr>
+                <td><strong>Price</strong></td>
+                <td>Number only, no $ sign (e.g., 12.99)</td>
+                <td><span class="badge-required">Required</span></td>
+            </tr>
+            <tr>
+                <td><strong>Category</strong></td>
+                <td>Select from dropdown: Quick Bites, Biryani, etc.</td>
+                <td><span class="badge-required">Required</span></td>
+            </tr>
+            <tr>
+                <td><strong>Dietary</strong></td>
+                <td>Select Veg / Non-Veg / Vegan / Gluten-Free</td>
+                <td><span class="badge-required">Required</span></td>
+            </tr>
+            <tr>
+                <td><strong>Description</strong></td>
+                <td>A short appetizing description of the food item</td>
+                <td><span class="badge-optional">Optional</span></td>
+            </tr>
+            <tr>
+                <td><strong>Badge</strong></td>
+                <td>Special label: Chef's Special, Bestseller, Spicy, New</td>
+                <td><span class="badge-optional">Optional</span></td>
+            </tr>
+            <tr>
+                <td><strong>Image URL</strong></td>
+                <td>Paste the Direct Link from PostImages.org here</td>
+                <td><span class="badge-optional">Optional</span></td>
+            </tr>
+            <tr>
+                <td><strong>Show on Site</strong></td>
+                <td>Checkbox — keep it checked so the dish appears on website</td>
+                <td><span class="badge-required">Required</span></td>
+            </tr>
+        </table>
+
+        <h3 style="font-size:15px; font-weight:700; color:#1a0e05; margin-bottom:14px; margin-top:24px;">⚡ Quick Actions for Existing Items</h3>
+        <div class="action-grid">
+            <div class="action-card">
+                <div class="action-icon edit">✏️</div>
+                <div>
+                    <h4>Edit / Update Item</h4>
+                    <p>Click the pencil icon on any dish. Change the price, name, description, or image. Then click "Save Menu Dish".</p>
+                </div>
+            </div>
+            <div class="action-card">
+                <div class="action-icon hide">👁️</div>
+                <div>
+                    <h4>Hide Item (Out of Stock)</h4>
+                    <p>Find the item and <strong>uncheck</strong> the "Show on Site" checkbox. The dish stays saved but disappears from the public menu.</p>
+                </div>
+            </div>
+            <div class="action-card">
+                <div class="action-icon delete">🗑️</div>
+                <div>
+                    <h4>Delete Item</h4>
+                    <p>Click the trash can icon on the dish. Confirm the deletion popup. <strong>Warning: This is permanent and cannot be undone!</strong></p>
+                </div>
+            </div>
+            <div class="action-card">
+                <div class="action-icon add">🔍</div>
+                <div>
+                    <h4>Find an Item Quickly</h4>
+                    <p>Use the <strong>Search Bar</strong> at the top of the Menu section to filter by name, category, or dietary type.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 4: Offers + Publish ===== -->
+<div class="content-page page-break">
+    <div class="page-header">
+        <span class="page-header-brand">Famous HD Biryani</span>
+        <span class="page-header-section">Offers & Publishing</span>
+    </div>
+
+    <!-- Offers Section -->
+    <div class="section-block">
+        <div class="section-title-row">
+            <span class="section-number">4</span>
+            <h2 class="section-title">Creating Promotional Offers</h2>
+        </div>
+        <p class="section-intro">You can create time-limited offers that automatically appear on your homepage with a scrolling announcement banner. Offers go <strong>live immediately</strong> when saved and automatically disappear on their expiry date.</p>
+
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-text">Click <strong>"Offers & Promo"</strong> in the left sidebar, then click <strong>"+ Create New Offer"</strong>.</div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-text">Fill in all the offer details (see table below).</div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-text">Click <strong>"Save Offer"</strong>. The offer will go live on the website immediately!</div>
+            </div>
+        </div>
+
+        <table class="field-table">
+            <tr>
+                <th>Field Name</th>
+                <th>What to Enter</th>
+                <th>Required?</th>
+            </tr>
+            <tr>
+                <td><strong>Offer Title</strong></td>
+                <td>Short headline (e.g., Weekend Biryani Special)</td>
+                <td><span class="badge-required">Required</span></td>
+            </tr>
+            <tr>
+                <td><strong>Discount Text</strong></td>
+                <td>The deal value (e.g., 15% OFF or Buy 1 Get 1 Free)</td>
+                <td><span class="badge-required">Required</span></td>
+            </tr>
+            <tr>
+                <td><strong>Icon</strong></td>
+                <td>Select an emoji/icon that fits the offer (Tag, Star, Gift, etc.)</td>
+                <td><span class="badge-optional">Optional</span></td>
+            </tr>
+            <tr>
+                <td><strong>Valid From</strong></td>
+                <td>The date and time the offer starts (e.g., today's date)</td>
+                <td><span class="badge-required">Required</span></td>
+            </tr>
+            <tr>
+                <td><strong>Valid Until</strong></td>
+                <td>The date and time the offer automatically expires</td>
+                <td><span class="badge-required">Required</span></td>
+            </tr>
+            <tr>
+                <td><strong>Description</strong></td>
+                <td>More details or promo code (e.g., Use code BIRYANI15)</td>
+                <td><span class="badge-optional">Optional</span></td>
+            </tr>
+            <tr>
+                <td><strong>Banner Text</strong></td>
+                <td>This text scrolls in the announcement bar at the top of the website</td>
+                <td><span class="badge-optional">Optional</span></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Publish Section -->
+    <div class="section-block">
+        <div class="section-title-row">
+            <span class="section-number">5</span>
+            <h2 class="section-title">Previewing & Publishing to the Live Website</h2>
+        </div>
+        <p class="section-intro">When you save changes to Menu items, Home page, About page, or Contact info, they are saved as a private <strong>draft</strong> first. The public website is not changed yet. You can preview all your changes before going live, and only push them live when you are happy.</p>
+
+        <div class="publish-flow">
+            <div class="pub-step">
+                <div class="pub-step-icon">✏️</div>
+                <h5>Make Changes</h5>
+                <p>Edit menu items, prices, descriptions in the Admin Dashboard</p>
+            </div>
+            <div class="pub-arrow">→</div>
+            <div class="pub-step">
+                <div class="pub-step-icon">👁️</div>
+                <h5>Preview Site</h5>
+                <p>Click "PREVIEW SITE" to see how it looks before it goes live</p>
+            </div>
+            <div class="pub-arrow">→</div>
+            <div class="pub-step">
+                <div class="pub-step-icon">🚀</div>
+                <h5>Publish Now</h5>
+                <p>Click the green "PUBLISH NOW" button at the top to go live</p>
+            </div>
+        </div>
+
+        <div class="info-box green">
+            <p class="info-box-title">✅ Where is the Publish Now Button?</p>
+            <p>Look at the top-right corner of your admin dashboard — you will see a bright <strong>green "PUBLISH NOW" button with a rocket icon</strong> (🚀). This button is always visible no matter which section you are in. One click publishes <strong>all your changes at once</strong>.</p>
+        </div>
+
+        <div class="info-box blue">
+            <p class="info-box-title">ℹ️ Note on Instant vs. Draft Changes</p>
+            <p>
+                <strong>Draft (requires Publish Now):</strong> Menu item changes, Home page edits, About page, Contact info<br><br>
+                <strong>Instant (no publish needed):</strong> Offers & Promotions, Gallery photos — these go live immediately when saved.
+            </p>
+        </div>
+
+        <div class="info-box gold">
+            <p class="info-box-title">🔄 Something Looks Out of Sync?</p>
+            <p>If the admin panel is showing old or incorrect data that doesn't match your website, click the <strong>"UPDATE WEBSITE TO ADMIN PANEL"</strong> button in the top header. This refreshes the admin with the current live website data.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 5: Quick Reference ===== -->
+<div class="content-page page-break">
+    <div class="page-header">
+        <span class="page-header-brand">Famous HD Biryani</span>
+        <span class="page-header-section">Quick Reference</span>
+    </div>
+
+    <div style="text-align:center; margin-bottom:40px;">
+        <h2 style="font-family:'Playfair Display',serif; font-size:28px; color:#1a0e05; margin-bottom:10px;">Quick Reference Card</h2>
+        <p style="color:#6b5a44; font-size:13px;">Keep this page handy for day-to-day website management</p>
+    </div>
+
+    <table class="field-table" style="margin-bottom:30px;">
+        <tr>
+            <th>Task</th>
+            <th>Where to Go</th>
+            <th>Button to Click</th>
+        </tr>
+        <tr>
+            <td>Add a new dish</td>
+            <td>Menu Management (sidebar)</td>
+            <td>+ Add New Dish → Save Menu Dish → PUBLISH NOW</td>
+        </tr>
+        <tr>
+            <td>Change a price</td>
+            <td>Menu Management</td>
+            <td>Pencil icon → Edit Price → Save → PUBLISH NOW</td>
+        </tr>
+        <tr>
+            <td>Hide a dish (sold out)</td>
+            <td>Menu Management</td>
+            <td>Uncheck "Show on Site" toggle → PUBLISH NOW</td>
+        </tr>
+        <tr>
+            <td>Permanently delete a dish</td>
+            <td>Menu Management</td>
+            <td>Trash icon → Confirm</td>
+        </tr>
+        <tr>
+            <td>Add a promotional offer</td>
+            <td>Offers & Promo (sidebar)</td>
+            <td>+ Create New Offer → Save Offer (goes live instantly)</td>
+        </tr>
+        <tr>
+            <td>Upload a food image</td>
+            <td>postimages.org (new tab)</td>
+            <td>Choose Images → Copy Direct Link → Paste in Image URL</td>
+        </tr>
+        <tr>
+            <td>Preview changes before going live</td>
+            <td>Top header button</td>
+            <td>PREVIEW SITE</td>
+        </tr>
+        <tr>
+            <td>Publish all changes live</td>
+            <td>Top header button</td>
+            <td>🚀 PUBLISH NOW (green button)</td>
+        </tr>
+        <tr>
+            <td>Restore admin panel data</td>
+            <td>Top header button</td>
+            <td>UPDATE WEBSITE TO ADMIN PANEL (amber button)</td>
+        </tr>
+    </table>
+
+    <div class="info-box gold" style="margin-bottom:20px;">
+        <p class="info-box-title">🔐 Admin Access Summary</p>
+        <p>
+            <strong>Admin Dashboard:</strong> https://famoushdbiryani.com/admin<br>
+            <strong>Live Website:</strong> https://famoushdbiryani.com<br>
+            <strong>Email:</strong> famoushdbiryanii@gmail.com<br>
+            <strong>Password:</strong> FamousHDBiryaniAdmin2026!<br>
+            <strong>Image Upload Tool:</strong> https://postimages.org/
+        </p>
+    </div>
+
+    <div style="text-align:center; padding-top:40px; border-top:2px solid #f0e8da; margin-top:20px;">
+        <p style="font-family:'Playfair Display',serif; font-size:18px; color:#C8A45D; margin-bottom:8px;">Famous HD Biryani</p>
+        <p style="font-size:11px; color:#b0916a; letter-spacing:1px;">Authentic Flavors · Real-Time Management · Always Fresh</p>
+        <p style="font-size:10px; color:#d0bfa8; margin-top:16px;">This document is confidential and intended for authorized administrators only.</p>
+    </div>
+</div>
+
+</body>
+</html>
