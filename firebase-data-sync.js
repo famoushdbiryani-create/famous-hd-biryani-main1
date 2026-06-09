@@ -328,25 +328,28 @@ async function syncHomePage(db, collectionName) {
 async function syncMenuPage(db, collectionName) {
     try {
         const menuRef = collection(db, collectionName);
-        const q = query(menuRef, where('visible', '==', true));
-        // Always fetch from server — never use stale browser cache
-        const querySnapshot = await getDocsFromServer(q);
-        
-        const menuItems = [];
-        querySnapshot.forEach((doc) => {
-            menuItems.push(doc.data());
-        });
-        
-        if (menuItems.length === 0) return;
-        
-        // Group items by category to construct dynamic cards
-        const categories = {};
-        menuItems.forEach(item => {
-            if (!categories[item.category]) categories[item.category] = [];
-            categories[item.category].push(item);
+
+        // Fetch ALL items from server (no visibility filter) so we can handle both showing and hiding
+        const allSnapshot = await getDocsFromServer(menuRef);
+
+        const allItems = [];
+        allSnapshot.forEach((doc) => {
+            allItems.push(doc.data());
         });
 
-        // Loop categories and render them
+        // If the database has no items at all yet, leave the static HTML in place
+        if (allItems.length === 0) return;
+
+        // Group VISIBLE items by category
+        const categories = {};
+        allItems.forEach(item => {
+            if (item.visible === true) {
+                if (!categories[item.category]) categories[item.category] = [];
+                categories[item.category].push(item);
+            }
+        });
+
+        // Section map: category name → HTML section ID
         const sectionMap = {
             'Quick Bites': 'quick-bites-section',
             'Veg Appetizers': 'veg-appetizers-section',
@@ -365,18 +368,26 @@ async function syncMenuPage(db, collectionName) {
             'Drinks': 'beverages-section'
         };
 
-        for (const [catName, dishes] of Object.entries(categories)) {
-            const sectionId = sectionMap[catName];
-            if (!sectionId) continue;
-            
+        // Process EVERY section — show/hide based on whether there are visible items
+        for (const [catName, sectionId] of Object.entries(sectionMap)) {
             const targetSection = document.getElementById(sectionId);
             if (!targetSection) continue;
-            
-            // Find or construct dynamic list container
+
+            const visibleDishes = categories[catName] || [];
+
+            if (visibleDishes.length === 0) {
+                // ✅ FIX: No visible items in this category → hide the entire section
+                targetSection.style.display = 'none';
+                continue;
+            }
+
+            // Has visible items → make sure section is shown and replace content
+            targetSection.style.display = '';
+
             let container = targetSection.querySelector('.fluid-grid') || targetSection.querySelector('.grid') || targetSection.querySelector('.menu-grid');
-            
+
             if (container) {
-                const dynamicHtml = dishes.map(dish => `
+                const dynamicHtml = visibleDishes.map(dish => `
                         <!-- Food Item Layout: Horizontal -->
                         <div data-dish-id="${catName.toLowerCase()}-dynamic" data-veg="${dish.dietary === 'veg'}" data-search="${dish.name.toLowerCase()} ${catName.toLowerCase()}" class="menu-item-card group flex items-start md:items-center gap-4 md:gap-8 p-4 md:p-6 transition-all duration-300 relative cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-2xl" data-original-name="${dish.name}" style="display: flex; perspective: 1000px; transform-style: preserve-3d;">
 
@@ -411,8 +422,8 @@ async function syncMenuPage(db, collectionName) {
                             </div>
                         </div>
                 `).join('');
-                
-                // Overwrite hardcoded fallback content with real dynamic data!
+
+                // Overwrite hardcoded fallback content with real dynamic data
                 container.innerHTML = dynamicHtml;
             }
         }
@@ -420,6 +431,7 @@ async function syncMenuPage(db, collectionName) {
         console.error("Error overlaying dynamic menu categories:", err);
     }
 }
+
 
 // ==========================================
 // 📖 ABOUT PAGE INJECTION
