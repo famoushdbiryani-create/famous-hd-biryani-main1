@@ -1729,7 +1729,7 @@ window.seedDatabaseFromLiveSite = async function(isManual = false) {
         let phone1 = "214-548-5462";
         let phone2 = "214-548-5464";
         let email = "famoushdbiryani@gmail.com";
-        let hours = "Tue - Sun: 11:00 AM - 10:00 PM\nMon: Closed";
+        let hours = "Fri - Sat: 11:00 AM - 10:30 PM\nSun - Thu: 11:00 AM - 10:00 PM";
         let mapLink = "https://maps.google.com/?q=Famous+HD+Biryani+McKinney";
         
         if (contactRes.ok) {
