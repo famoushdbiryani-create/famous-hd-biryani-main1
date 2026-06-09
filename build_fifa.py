@@ -71,6 +71,23 @@ html_template = """
         </div>
     </div>
 
+    <!-- Controls: Veg Filter -->
+    <section id="menu-filter-controls" class="bg-surface-light dark:bg-surface-dark border-b border-gray-200 dark:border-gray-800 py-6 sticky top-[132px] md:top-[144px] z-30 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <!-- Veg / Non-Veg Toggle -->
+                <div class="flex items-center gap-3 bg-white dark:bg-background-dark p-2 rounded-full border border-gray-200 dark:border-gray-700 shadow-inner w-full sm:w-auto justify-center">
+                    <span class="text-sm font-bold text-gray-500 dark:text-gray-400">All</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input id="veg-only-filter" type="checkbox" class="sr-only peer" />
+                        <div class="w-11 h-6 bg-gray-300 dark:bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                    </label>
+                    <span class="text-sm font-bold text-green-600 dark:text-green-400"><i class="fas fa-leaf mr-1"></i>Veg Only</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- MAIN MENU CONTENT -->
     <main class="py-12 bg-background-light dark:bg-background-dark min-h-screen">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24" id="menu-container">
@@ -230,6 +247,7 @@ def main():
             const container = document.getElementById('category-container');
             const leftBtn = document.getElementById('scroll-cat-left');
             const rightBtn = document.getElementById('scroll-cat-right');
+            let isScrollingFromClick = false;
 
             // Scroll buttons
             if (leftBtn && rightBtn && container) {
@@ -245,6 +263,8 @@ def main():
             tabs.forEach(tab => {
                 tab.addEventListener('click', (e) => {
                     e.preventDefault();
+                    isScrollingFromClick = true;
+                    
                     const targetId = tab.getAttribute('data-target');
                     const targetEl = document.getElementById(targetId);
                     if (targetEl) {
@@ -263,7 +283,17 @@ def main():
                         });
                         tab.classList.remove('text-gray-500', 'border-transparent');
                         tab.classList.add('text-primary', 'border-primary');
+                        
+                        // Scroll tab into view manually without `scrollIntoView` to prevent jumping document
+                        if (container) {
+                            const tabRect = tab.getBoundingClientRect();
+                            const containerRect = container.getBoundingClientRect();
+                            if (tabRect.left < containerRect.left || tabRect.right > containerRect.right) {
+                                container.scrollBy({ left: tabRect.left - containerRect.left - containerRect.width/2 + tabRect.width/2, behavior: 'smooth' });
+                            }
+                        }
                     }
+                    setTimeout(() => { isScrollingFromClick = false; }, 800);
                 });
             });
             
@@ -271,19 +301,24 @@ def main():
             const sections = document.querySelectorAll('.menu-category');
             const observerOptions = {
                 root: null,
-                rootMargin: '-20% 0px -70% 0px',
+                rootMargin: '-180px 0px -60% 0px',
                 threshold: 0
             };
             const observer = new IntersectionObserver((entries) => {
+                if (isScrollingFromClick) return;
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
+                    if (entry.isIntersecting && entry.target.style.display !== 'none') {
                         const id = entry.target.getAttribute('id');
                         tabs.forEach(t => {
                             if (t.getAttribute('data-target') === id) {
                                 t.classList.remove('text-gray-500', 'border-transparent');
                                 t.classList.add('text-primary', 'border-primary');
                                 if (container) {
-                                    t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                                    const tabRect = t.getBoundingClientRect();
+                                    const containerRect = container.getBoundingClientRect();
+                                    if (tabRect.left < containerRect.left || tabRect.right > containerRect.right) {
+                                        container.scrollBy({ left: tabRect.left - containerRect.left - containerRect.width/2 + tabRect.width/2, behavior: 'smooth' });
+                                    }
                                 }
                             } else {
                                 t.classList.remove('text-primary', 'border-primary');
@@ -295,6 +330,36 @@ def main():
             }, observerOptions);
 
             sections.forEach(sec => observer.observe(sec));
+            
+            // Veg Toggle Logic
+            const vegToggle = document.getElementById('veg-only-filter');
+            if (vegToggle) {
+                vegToggle.addEventListener('change', () => {
+                    const isVegOnly = vegToggle.checked;
+                    const items = document.querySelectorAll('.menu-item-card');
+                    
+                    items.forEach(item => {
+                        const htmlString = item.innerHTML;
+                        const isVeg = htmlString.includes('>VEG</span>');
+                        
+                        if (isVegOnly && !isVeg) {
+                            item.style.display = 'none';
+                        } else {
+                            item.style.display = '';
+                        }
+                    });
+                    
+                    // Hide categories that have no visible items
+                    sections.forEach(sec => {
+                        const visibleItems = Array.from(sec.querySelectorAll('.menu-item-card')).filter(i => i.style.display !== 'none');
+                        if (visibleItems.length === 0) {
+                            sec.style.display = 'none';
+                        } else {
+                            sec.style.display = 'block';
+                        }
+                    });
+                });
+            }
         });
     </script>
     """
