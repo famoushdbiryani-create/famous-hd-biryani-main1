@@ -4,7 +4,7 @@
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
 import { 
-    getFirestore, doc, getDoc, collection, getDocs, query, orderBy, where, onSnapshot 
+    getFirestore, doc, getDoc, getDocFromServer, collection, getDocs, getDocsFromServer, query, orderBy, where, onSnapshot 
 } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 // Central configuration - SAME credentials as admin/js/firebase-config.js
@@ -329,7 +329,8 @@ async function syncMenuPage(db, collectionName) {
     try {
         const menuRef = collection(db, collectionName);
         const q = query(menuRef, where('visible', '==', true));
-        const querySnapshot = await getDocs(q);
+        // Always fetch from server — never use stale browser cache
+        const querySnapshot = await getDocsFromServer(q);
         
         const menuItems = [];
         querySnapshot.forEach((doc) => {
