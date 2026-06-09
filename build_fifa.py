@@ -71,27 +71,53 @@ html_template = """
         </div>
     </div>
 
-    <!-- Controls: Veg Filter -->
-    <section id="menu-filter-controls" class="bg-surface-light dark:bg-surface-dark border-b border-gray-200 dark:border-gray-800 py-6 sticky top-[132px] md:top-[144px] z-30 shadow-sm transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <!-- Veg / Non-Veg Toggle -->
-                <div class="flex items-center gap-3 bg-white dark:bg-background-dark p-2 rounded-full border border-gray-200 dark:border-gray-700 shadow-inner w-full sm:w-auto justify-center">
-                    <span class="text-sm font-bold text-gray-500 dark:text-gray-400">All</span>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input id="veg-only-filter" type="checkbox" class="sr-only peer" />
-                        <div class="w-11 h-6 bg-gray-300 dark:bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                    </label>
-                    <span class="text-sm font-bold text-green-600 dark:text-green-400"><i class="fas fa-leaf mr-1"></i>Veg Only</span>
-                </div>
+    <!-- Controls: Veg Filter & Menu Search -->
+    <section id="menu-filter-controls" class="py-10 bg-surface-light dark:bg-surface-dark transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center space-x-4 bg-background-light dark:bg-background-dark p-3 rounded-full border border-black/10 dark:border-white/10 shadow-inner">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide px-3">All</span>
+                <label class="toggle-switch">
+                    <input id="veg-only-filter" type="checkbox" />
+                    <span class="slider"></span>
+                </label>
+                <span class="text-sm font-medium text-green-600 dark:text-green-500 uppercase tracking-wide flex items-center pr-4">
+                    <i class="fas fa-leaf mr-1"></i> Veg Only
+                </span>
+            </div>
+
+            <div class="relative w-full md:w-96 group">
+                <input type="text" id="menu-search" placeholder="Search dishes..."
+                    class="w-full bg-background-light dark:bg-background-dark border border-primary/30 text-gray-900 dark:text-white rounded-full py-3 px-6 pl-12 pr-10 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition shadow-sm group-hover:shadow-md">
+                <i class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-primary"></i>
+                <button id="search-clear-btn" type="button" aria-label="Clear search"
+                    class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary transition-colors hidden cursor-pointer text-sm">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
         </div>
     </section>
 
     <!-- MAIN MENU CONTENT -->
-    <main class="py-12 bg-background-light dark:bg-background-dark min-h-screen">
+    <main class="py-12 bg-surface-light dark:bg-surface-dark min-h-screen">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24" id="menu-container">
             
+            <!-- No Results Found -->
+            <div id="no-results-container" class="hidden text-center py-20 px-4 transition-all duration-500 animate-[fadeSlideUp_0.5s_ease-out] relative overflow-hidden rounded-[2.5rem] border border-primary/10 bg-surface-light dark:bg-surface-dark shadow-inner mb-12">
+                <div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none bg-mandala-pattern scale-150"></div>
+                <div class="relative z-10">
+                    <div class="mb-8">
+                        <div class="w-32 h-32 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-primary/20 shadow-lg relative">
+                            <i class="fas fa-utensils text-5xl text-primary/30 absolute transform -rotate-12 translate-x-[-20px]"></i>
+                            <i class="fas fa-search text-5xl text-primary/50 relative z-10"></i>
+                            <i class="fas fa-leaf text-3xl text-veg-green/30 absolute transform rotate-12 translate-x-[25px] translate-y-[10px]"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-3xl md:text-4xl font-display font-bold text-gray-900 dark:text-white mb-4 tracking-tight">No matching dishes found</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-lg mb-8 max-w-md mx-auto font-body">We couldn't find any items matching your current filters and search term.</p>
+                    <button id="clear-filters-btn" class="bg-primary hover:bg-primary-hover text-white font-semibold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">Clear Filters & Search</button>
+                </div>
+            </div>
+
             {CATEGORIES}
 
         </div>
@@ -225,8 +251,8 @@ def main():
     with open(base_file, "r", encoding="utf-8") as f:
         content = f.read()
         
-    head_match = re.search(r'(?s)(<!DOCTYPE html>.*?<body[^>]*>).*?(<div data-site-header-root></div>)', content)
-    head_str = head_match.group(1) + "\n" + head_match.group(2)
+    head_match = re.search(r'(?s)(<!DOCTYPE html>.*?)(?=<!-- Hero Section -->)', content)
+    head_str = head_match.group(1)
     
     # Modify title and description
     head_str = re.sub(r'<title>.*?</title>', '<title>FIFA World Cup Special Menu | Famous HD Biryani</title>', head_str)
@@ -243,11 +269,12 @@ def main():
     sticky_script = """
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const tabs = document.querySelectorAll('.category-tab');
+            const tabs = Array.from(document.querySelectorAll('.category-tab'));
             const container = document.getElementById('category-container');
             const leftBtn = document.getElementById('scroll-cat-left');
             const rightBtn = document.getElementById('scroll-cat-right');
             let isScrollingFromClick = false;
+            let activeSectionId = null;
 
             // Scroll buttons
             if (leftBtn && rightBtn && container) {
@@ -256,6 +283,28 @@ def main():
                 });
                 rightBtn.addEventListener('click', () => {
                     container.scrollBy({ left: 200, behavior: 'smooth' });
+                });
+            }
+
+            const TAB_ACTIVE = "category-tab shrink-0 flex flex-col items-center justify-center py-2 px-4 mx-1 md:mx-4 min-w-[80px] md:min-w-[120px] transition-all duration-300 relative group text-primary border-b-2 border-primary";
+            const TAB_INACTIVE = "category-tab shrink-0 flex flex-col items-center justify-center py-2 px-4 mx-1 md:mx-4 min-w-[80px] md:min-w-[120px] transition-all duration-300 relative group text-gray-500 border-b-2 border-transparent hover:text-gray-900 dark:hover:text-gray-300";
+
+            function setActiveTab(targetId) {
+                if (activeSectionId === targetId) return;
+                activeSectionId = targetId;
+                tabs.forEach(t => {
+                    if (t.getAttribute('data-target') === targetId) {
+                        t.className = TAB_ACTIVE;
+                        if (container) {
+                            const tabRect = t.getBoundingClientRect();
+                            const containerRect = container.getBoundingClientRect();
+                            if (tabRect.left < containerRect.left || tabRect.right > containerRect.right) {
+                                container.scrollBy({ left: tabRect.left - containerRect.left - containerRect.width/2 + tabRect.width/2, behavior: 'smooth' });
+                            }
+                        }
+                    } else {
+                        t.className = TAB_INACTIVE;
+                    }
                 });
             }
 
@@ -268,6 +317,8 @@ def main():
                     const targetId = tab.getAttribute('data-target');
                     const targetEl = document.getElementById(targetId);
                     if (targetEl) {
+                        setActiveTab(targetId);
+                        
                         const headerOffset = 160;
                         const elementPosition = targetEl.getBoundingClientRect().top;
                         const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
@@ -275,89 +326,109 @@ def main():
                             top: offsetPosition,
                             behavior: "smooth"
                         });
-                        
-                        // Active state
-                        tabs.forEach(t => {
-                            t.classList.remove('text-primary', 'border-primary');
-                            t.classList.add('text-gray-500', 'border-transparent');
-                        });
-                        tab.classList.remove('text-gray-500', 'border-transparent');
-                        tab.classList.add('text-primary', 'border-primary');
-                        
-                        // Scroll tab into view manually without `scrollIntoView` to prevent jumping document
-                        if (container) {
-                            const tabRect = tab.getBoundingClientRect();
-                            const containerRect = container.getBoundingClientRect();
-                            if (tabRect.left < containerRect.left || tabRect.right > containerRect.right) {
-                                container.scrollBy({ left: tabRect.left - containerRect.left - containerRect.width/2 + tabRect.width/2, behavior: 'smooth' });
-                            }
-                        }
                     }
                     setTimeout(() => { isScrollingFromClick = false; }, 800);
                 });
             });
             
             // Intercept Intersection Observer logic
-            const sections = document.querySelectorAll('.menu-category');
-            const observerOptions = {
-                root: null,
-                rootMargin: '-180px 0px -60% 0px',
-                threshold: 0
+            const sections = Array.from(document.querySelectorAll('.menu-category'));
+            const getRootMargin = () => {
+                const isMobile = window.innerWidth < 768;
+                return isMobile ? '-160px 0px -60% 0px' : '-180px 0px -60% 0px';
             };
             const observer = new IntersectionObserver((entries) => {
                 if (isScrollingFromClick) return;
                 entries.forEach(entry => {
                     if (entry.isIntersecting && entry.target.style.display !== 'none') {
-                        const id = entry.target.getAttribute('id');
-                        tabs.forEach(t => {
-                            if (t.getAttribute('data-target') === id) {
-                                t.classList.remove('text-gray-500', 'border-transparent');
-                                t.classList.add('text-primary', 'border-primary');
-                                if (container) {
-                                    const tabRect = t.getBoundingClientRect();
-                                    const containerRect = container.getBoundingClientRect();
-                                    if (tabRect.left < containerRect.left || tabRect.right > containerRect.right) {
-                                        container.scrollBy({ left: tabRect.left - containerRect.left - containerRect.width/2 + tabRect.width/2, behavior: 'smooth' });
-                                    }
-                                }
-                            } else {
-                                t.classList.remove('text-primary', 'border-primary');
-                                t.classList.add('text-gray-500', 'border-transparent');
-                            }
-                        });
+                        setActiveTab(entry.target.id);
                     }
                 });
-            }, observerOptions);
+            }, {
+                rootMargin: getRootMargin(),
+                threshold: 0
+            });
 
             sections.forEach(sec => observer.observe(sec));
             
-            // Veg Toggle Logic
+            // Filter and Search Logic
             const vegToggle = document.getElementById('veg-only-filter');
+            const searchInput = document.getElementById('menu-search');
+            const clearBtn = document.getElementById('search-clear-btn');
+            const clearFiltersBtn = document.getElementById('clear-filters-btn');
+            const noResultsContainer = document.getElementById('no-results-container');
+
+            function applyFilters() {
+                const isVegOnly = vegToggle ? vegToggle.checked : false;
+                const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+                const items = document.querySelectorAll('.menu-item-card');
+                let totalVisibleItems = 0;
+                
+                items.forEach(item => {
+                    const htmlString = item.innerHTML;
+                    const isVeg = htmlString.includes('>VEG</span>');
+                    
+                    const nameEl = item.querySelector('.dish-name');
+                    const descEl = item.querySelector('.dish-desc');
+                    const itemName = nameEl ? nameEl.textContent.toLowerCase() : '';
+                    const itemDesc = descEl ? descEl.textContent.toLowerCase() : '';
+                    
+                    const matchesSearch = itemName.includes(searchTerm) || itemDesc.includes(searchTerm);
+                    const matchesVeg = !isVegOnly || isVeg;
+                    
+                    if (matchesSearch && matchesVeg) {
+                        item.style.display = '';
+                        totalVisibleItems++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Hide/show clear button
+                if (clearBtn) {
+                    if (searchTerm.length > 0) {
+                        clearBtn.classList.remove('hidden');
+                    } else {
+                        clearBtn.classList.add('hidden');
+                    }
+                }
+                
+                // Hide categories that have no visible items
+                sections.forEach(sec => {
+                    const visibleItems = Array.from(sec.querySelectorAll('.menu-item-card')).filter(i => i.style.display !== 'none');
+                    if (visibleItems.length === 0) {
+                        sec.style.display = 'none';
+                    } else {
+                        sec.style.display = 'block';
+                    }
+                });
+                
+                // Show/hide no results container
+                if (totalVisibleItems === 0) {
+                    if (noResultsContainer) noResultsContainer.classList.remove('hidden');
+                    sections.forEach(sec => sec.style.display = 'none');
+                } else {
+                    if (noResultsContainer) noResultsContainer.classList.add('hidden');
+                }
+            }
+
             if (vegToggle) {
-                vegToggle.addEventListener('change', () => {
-                    const isVegOnly = vegToggle.checked;
-                    const items = document.querySelectorAll('.menu-item-card');
-                    
-                    items.forEach(item => {
-                        const htmlString = item.innerHTML;
-                        const isVeg = htmlString.includes('>VEG</span>');
-                        
-                        if (isVegOnly && !isVeg) {
-                            item.style.display = 'none';
-                        } else {
-                            item.style.display = '';
-                        }
-                    });
-                    
-                    // Hide categories that have no visible items
-                    sections.forEach(sec => {
-                        const visibleItems = Array.from(sec.querySelectorAll('.menu-item-card')).filter(i => i.style.display !== 'none');
-                        if (visibleItems.length === 0) {
-                            sec.style.display = 'none';
-                        } else {
-                            sec.style.display = 'block';
-                        }
-                    });
+                vegToggle.addEventListener('change', applyFilters);
+            }
+            if (searchInput) {
+                searchInput.addEventListener('input', applyFilters);
+            }
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    searchInput.value = '';
+                    applyFilters();
+                });
+            }
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', () => {
+                    if (vegToggle) vegToggle.checked = false;
+                    if (searchInput) searchInput.value = '';
+                    applyFilters();
                 });
             }
         });
